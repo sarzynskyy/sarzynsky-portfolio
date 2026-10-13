@@ -1,9 +1,8 @@
 import { defineConfig } from 'astro/config';
 
-// GitHub Pages:
-//  - repo "nazwa.github.io"  -> site: 'https://nazwa.github.io', base: '/'
-//  - zwykłe repo "portfolio" -> site: 'https://nazwa.github.io', base: '/portfolio'
+// Wersja robocza na GitHub Pages: https://sarzynskyy.github.io/sarzynsky-portfolio/
+// Po podpięciu własnej domeny: site: 'https://twojadomena.pl', base: '/'
 export default defineConfig({
-  site: 'https://USERNAME.github.io',
-  base: '/',
+  site: 'https://sarzynskyy.github.io',
+  base: '/sarzynsky-portfolio',
 });
