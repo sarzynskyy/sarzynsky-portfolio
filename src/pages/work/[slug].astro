@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { projects } from '../../data/projects.js';
+import { u, watchUrl } from '../../lib/url.js';
 
 export function getStaticPaths() {
   return projects.map((p, i) => ({
@@ -24,12 +25,15 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         <iframe src={p.embed} title={p.title} allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
     )}
+    {p.type === 'video' && (
+      <a class="watch mono" href={watchUrl(p.embed)} target="_blank" rel="noopener">Oglądaj na {p.embed.includes('vimeo') ? 'Vimeo' : 'YouTube'} ↗</a>
+    )}
 
     {p.type === 'photo' && (
       <div class="masonry">
         {p.photos.map((src, i) => (
           <button class="ph reveal" data-i={i} aria-label={`Powiększ zdjęcie ${i + 1}`}>
-            <img src={src} alt={`${p.title} — ${i + 1}`} loading="lazy" />
+            <img src={u(src)} alt={`${p.title} — ${i + 1}`} loading="lazy" />
           </button>
         ))}
       </div>
@@ -84,6 +88,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   .desc { max-width: 560px; color: #c9c9c9; font-size: 18px; }
   .player { aspect-ratio: 16/9; background: #000; }
   .player iframe { width: 100%; height: 100%; border: 0; }
+  .watch { display: inline-block; margin-top: 16px; }
+  .watch:hover { color: var(--accent); }
   .masonry { columns: 3 320px; column-gap: 16px; }
   .ph { display: block; width: 100%; margin-bottom: 16px; border: 0; padding: 0; background: none; cursor: zoom-in; break-inside: avoid; overflow: hidden; }
   .ph img { width: 100%; transition: transform .8s cubic-bezier(.2,.7,.2,1); }

@@ -1,12 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
 import { site } from '../data/site.js';
+import { u } from '../lib/url.js';
 const services = ['Teledyski', 'Reklamy i brand filmy', 'Eventy i koncerty', 'Portrety', 'Content na social media', 'Montaż i color grading'];
 ---
 <Base title="About">
   <section class="wrap about">
     <div class="photo reveal">
-      <img src="https://picsum.photos/seed/me/900/1200?grayscale" alt={site.name} />
+      <img src={u("/photos/placeholder/me.jpg")} alt={site.name} />
     </div>
     <div class="text">
       <p class="mono"><span class="dot"></span>About</p>

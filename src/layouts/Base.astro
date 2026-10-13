@@ -10,6 +10,7 @@ const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — Video 
 <html lang="pl">
   <head>
     <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add('js')</script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />

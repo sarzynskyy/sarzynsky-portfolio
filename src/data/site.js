@@ -6,5 +6,5 @@ export const site = {
   location: 'Kraków, PL',
   // Plik showreela wrzuć do public/video/showreel.mp4 (krótki, wyciszony, < 10 MB)
   showreel: '/video/showreel.mp4',
-  showreelPoster: 'https://picsum.photos/seed/reel/1920/1080?grayscale',
+  showreelPoster: '/photos/placeholder/reel.jpg',
 };
