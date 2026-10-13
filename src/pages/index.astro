@@ -1,0 +1,67 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { site } from '../data/site.js';
+import { projects } from '../data/projects.js';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const reel = site.showreel.startsWith('/') ? base + site.showreel : site.showreel;
+---
+<Base>
+  <section class="hero">
+    <video autoplay muted loop playsinline poster={site.showreelPoster} src={reel}></video>
+    <div class="shade"></div>
+    <div class="hero-text wrap">
+      <p class="mono"><span class="dot"></span>Showreel {new Date().getFullYear()}</p>
+      <h1 class="display">Video<br />&amp; Photo</h1>
+      <p class="tag">{site.tagline}</p>
+    </div>
+    <a href="#work" class="scroll mono">Scroll ↓</a>
+  </section>
+
+  <section id="work" class="wrap">
+    <div class="head">
+      <h2 class="display">Selected work</h2>
+      <div class="filters mono" role="tablist">
+        <button class="on" data-f="all">All</button>
+        <button data-f="video">Video</button>
+        <button data-f="photo">Photo</button>
+      </div>
+    </div>
+    <div class="grid">
+      {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
+    </div>
+  </section>
+</Base>
+
+<script>
+  const btns = document.querySelectorAll('.filters button');
+  btns.forEach(b => b.addEventListener('click', () => {
+    btns.forEach(x => x.classList.toggle('on', x === b));
+    const f = b.dataset.f;
+    document.querySelectorAll('.card').forEach(c => {
+      c.style.display = f === 'all' || c.dataset.type === f ? '' : 'none';
+    });
+  }));
+</script>
+
+<style>
+  .hero { position: relative; height: 100svh; min-height: 520px; overflow: hidden; }
+  .hero video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.15) 40%, rgba(11,11,11,1)); }
+  .hero-text { position: absolute; bottom: 12vh; left: 0; right: 0; }
+  h1 { font-size: clamp(72px, 17vw, 260px); margin: 12px 0 16px; }
+  .tag { max-width: 420px; color: #cfcfcf; }
+  .scroll { position: absolute; right: var(--pad); bottom: 32px; color: #fff; }
+  #work { padding-top: 96px; }
+  .head { display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: end; margin-bottom: 40px; border-bottom: 1px solid var(--line); padding-bottom: 20px; }
+  h2 { font-size: clamp(40px, 7vw, 96px); }
+  .filters { display: flex; gap: 8px; }
+  .filters button { font: inherit; color: var(--muted); background: none; border: 1px solid var(--line); padding: 8px 14px; cursor: pointer; transition: all .2s; }
+  .filters button.on, .filters button:hover { color: var(--bg); background: var(--fg); border-color: var(--fg); }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 64px 32px; }
+  .grid > :global(:nth-child(even)) { transform: translateY(80px); }
+  @media (max-width: 760px) {
+    .grid { grid-template-columns: 1fr; gap: 48px; }
+    .grid > :global(:nth-child(even)) { transform: none; }
+  }
+</style>
