@@ -8,17 +8,27 @@ const links = [
   { href: `mailto:${site.email}`, label: 'Contact' },
 ];
 ---
-<header class="wrap">
+<!-- Warstwa 1: prawdziwy nagłówek, odwraca kolory tła (difference) -->
+<header class="bar wrap">
   <a href={`${base}/`} class="logo display">{site.name}</a>
   <nav>
     {links.map(l => <a href={l.href} class:list={['mono', { active: path.startsWith(l.href) && l.label === 'About' }]}>{l.label}</a>)}
   </nav>
 </header>
+<!-- Warstwa 2: ta sama treść, odbiera kolor pikselom pod literami (saturation),
+     dzięki czemu efekt jest czarno-biały zamiast np. niebieskiego. Niewidoczna dla czytników i myszy. -->
+<div class="bar wrap ghost" aria-hidden="true">
+  <span class="logo display">{site.name}</span>
+  <span class="nav">
+    {links.map(l => <span class="mono">{l.label}</span>)}
+  </span>
+</div>
 <style>
-  header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; height: 72px; background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,0)); }
-  .logo { font-size: 24px; color: #fff; }
-  nav { display: flex; gap: 24px; }
-  nav a { color: #fff; transition: opacity .2s; }
+  .bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; height: 72px; color: #fff; mix-blend-mode: difference; }
+  .ghost { z-index: 51; color: #808080; mix-blend-mode: saturation; pointer-events: none; user-select: none; }
+  .logo { font-size: 24px; color: inherit; }
+  nav, .nav { display: flex; gap: 24px; }
+  nav a { color: inherit; transition: opacity .2s; }
   nav a:hover, nav a.active { opacity: .6; }
-  @media (max-width: 480px) { nav { gap: 14px; } .logo { font-size: 20px; } }
+  @media (max-width: 480px) { nav, .nav { gap: 14px; } .logo { font-size: 20px; } }
 </style>
