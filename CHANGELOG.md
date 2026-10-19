@@ -19,6 +19,12 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 
 ## Zmiany
 
+### 2026-10-19
+- **Projekt „Maciek Duda — YouTube”:** podstrona z filmem Ironman Tallinn na górze i 13 kolejnymi odcinkami; opis roli (zdjęcia, montaż, produkcja) i skali projektu.
+- **Player YouTube przyjazny prywatności:** film ładuje się dopiero po kliknięciu, w trybie bez ciasteczek (youtube-nocookie); bez JavaScriptu działa jako link do YouTube.
+- **Miniatury filmów na własnym serwerze:** pobierane automatycznie przy budowaniu strony i konwertowane do WebP — przy wejściu na stronę nic nie łączy się z Google.
+- **CI:** jawne kroki budowania (Node 24, npm ci), a przy błędzie — jego treść w podsumowaniu GitHub Actions.
+
 ### 2026-10-13
 - **Nagłówek:** efekt odwracania kolorów (logo/menu dopasowują się do tła) w wersji czarno-białej — bez niebieskiego nad ciepłymi zdjęciami.
 - **Nagłówek:** logo „SARZYNSKY” i menu w kolorze białym zamiast niebieskiego.

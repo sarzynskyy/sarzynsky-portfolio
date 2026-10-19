@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import { projects } from '../../data/projects.js';
 import { u, watchUrl } from '../../lib/url.js';
+import YouTube from '../../components/YouTube.astro';
 
 export function getStaticPaths() {
   return projects.map((p, i) => ({
@@ -18,14 +19,36 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       <p class="mono"><span class="dot"></span>{p.type} · {p.client} · {p.year}</p>
       <h1 class="display">{p.title}</h1>
       <p class="desc">{p.description}</p>
+      {p.role && <p class="role mono">Moja rola: {p.role}</p>}
     </header>
 
-    {p.type === 'video' && (
+    {p.youtube && (
+      <section class="ytwrap" aria-label="Filmy">
+        <div class="reveal"><YouTube id={p.youtube[0].id} title={p.youtube[0].title} large /></div>
+        <p class="ytcap">{p.youtube[0].title}</p>
+        {p.highlight && <p class="highlight">{p.highlight}</p>}
+        {p.youtube.length > 1 && (
+          <>
+            <h2 class="mono more">Więcej odcinków</h2>
+            <ul class="ytgrid">
+              {p.youtube.slice(1).map((v) => (
+                <li class="reveal">
+                  <YouTube id={v.id} title={v.title} />
+                  <p class="ytcap small">{v.title}</p>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </section>
+    )}
+
+    {p.type === 'video' && p.embed && (
       <div class="player reveal">
         <iframe src={p.embed} title={p.title} allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe>
       </div>
     )}
-    {p.type === 'video' && (
+    {p.type === 'video' && p.embed && (
       <a class="watch mono" href={watchUrl(p.embed)} target="_blank" rel="noopener">Oglądaj na {p.embed.includes('vimeo') ? 'Vimeo' : 'YouTube'} ↗</a>
     )}
 
@@ -87,6 +110,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   h1 { font-size: clamp(56px, 11vw, 170px); margin: 16px 0 24px; }
   .desc { max-width: 560px; color: #c9c9c9; font-size: 18px; }
   .player { aspect-ratio: 16/9; background: #000; }
+  .role { margin-top: 20px; color: var(--fg); }
+  .ytcap { margin-top: 12px; font-size: 18px; }
+  .ytcap.small { font-size: 16px; color: #c9c9c9; }
+  .highlight { margin-top: 20px; max-width: 640px; padding-left: 16px; border-left: 2px solid var(--accent); color: #e6e6e6; }
+  .more { margin: 72px 0 24px; }
+  .ytgrid { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 40px 24px; }
   .player iframe { width: 100%; height: 100%; border: 0; }
   .watch { display: inline-block; margin-top: 16px; }
   .watch:hover { color: var(--accent); }

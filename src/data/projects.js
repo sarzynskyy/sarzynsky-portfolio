@@ -6,6 +6,35 @@ const ph = (s) => `/photos/placeholder/${s}.jpg`; // przykładowe — podmień n
 
 export const projects = [
   {
+    slug: 'maciek-duda-youtube',
+    title: 'Maciek Duda — YouTube',
+    type: 'video',
+    year: 2026,
+    client: 'Maciek Duda · YouTube',
+    role: 'Zdjęcia · Montaż · Produkcja',
+    cover: '/yt/0qbRgEXaAto.webp',
+    description:
+      'Seria filmów z drogi Maćka do IRONMANA i innych sportowych wyzwań — od 1/8 dystansu, przez połówkę w Gdyni, po pełnego Ironmana w Tallinnie. Do tego Runmageddon, maratony, rower przez całą Polskę i Giewont.',
+    highlight: 'Ironman Tallinn: ok. 1 TB materiału i ponad 100 godzin montażu i produkcji.',
+    // pierwszy film = główny (duży player na górze podstrony)
+    youtube: [
+      { id: '0qbRgEXaAto', title: 'Zostałem Ironmanem!!! [Tallin 2026]' },
+      { id: 'OfqiBj4TIDM', title: 'Podjazdy mnie zmiażdżyły… (Ironman 70.3 Gdynia)' },
+      { id: 'DTmH1yYfMp8', title: 'Przetrwałem 1/2 Ironman! (trudniejsze niż myślałem)' },
+      { id: 'zYg_r5qTtX8', title: 'Zrobiłem życiówkę!!! [1/4 Ironman]' },
+      { id: 'auqi3ONpz1Q', title: 'Zaczynam największe wyzwanie mojego życia!! [1/8 Ironman]' },
+      { id: '_6zKvs7Lwv4', title: 'Jaki jest mój limit?! (VO2max & bike fitting)' },
+      { id: '-YyfYTLpwWE', title: 'Przejechałem Polskę rowerem!! [PL południe – północ]' },
+      { id: 'OoEZxWh4frI', title: 'Ból, błoto i góry – Runmageddon Hardcore i Gravel' },
+      { id: 'frbKCOPm0Hs', title: 'Runmageddon – czy to takie trudne?!' },
+      { id: '_Ev48GCUOPw', title: 'Miałem łzy w oczach!! (Maraton Warszawski)' },
+      { id: '3tC1sCYkmO8', title: 'Test siły przed maratonem!!!' },
+      { id: 'h5ds17S8QkE', title: 'Nie sądziłem, że to będzie takie trudne!' },
+      { id: 'S7GxZJhS9GI', title: 'To on wygrał Sopot 2025! feat. Adizaster' },
+      { id: 'prZV2-oydPI', title: 'Walka z wysokością!!! Zdobywamy Giewont' },
+    ],
+  },
+  {
     slug: 'nocna-zmiana',
     title: 'Nocna Zmiana',
     type: 'video',
