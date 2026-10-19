@@ -4,7 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site } from '../data/site.js';
 const { title, description = site.tagline } = Astro.props;
-const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — Video & Photo`;
+const fullTitle = title ? `${title} | ${site.name}` : `${site.name} | Video & Photo`;
 ---
 <!doctype html>
 <html lang="pl">

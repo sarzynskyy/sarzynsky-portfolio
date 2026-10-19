@@ -1,20 +1,20 @@
 // Każdy projekt to jedna podstrona /work/<slug>.
 // type: 'video' | 'photo'
-// video: YouTube/Vimeo — wklej link do embeda (youtube.com/embed/ID lub player.vimeo.com/video/ID)
+// video: YouTube/Vimeo: wklej link do embeda (youtube.com/embed/ID lub player.vimeo.com/video/ID)
 // photos: lista adresów zdjęć (najlepiej wrzucić do public/photos/... i podać '/photos/...')
-const ph = (s) => `/photos/placeholder/${s}.jpg`; // przykładowe — podmień na swoje
+const ph = (s) => `/photos/placeholder/${s}.jpg`; // przykładowe, podmień na swoje
 
 export const projects = [
   {
     slug: 'maciek-duda-youtube',
-    title: 'Maciek Duda — YouTube',
+    title: 'Maciek Duda YouTube',
     type: 'video',
     year: 2026,
     client: 'Maciek Duda · YouTube',
     role: 'Zdjęcia · Montaż · Produkcja',
     cover: '/yt/0qbRgEXaAto.webp',
     description:
-      'Seria filmów z drogi Maćka do IRONMANA i innych sportowych wyzwań — od 1/8 dystansu, przez połówkę w Gdyni, po pełnego Ironmana w Tallinnie. Do tego Runmageddon, maratony, rower przez całą Polskę i Giewont.',
+      'Seria filmów z drogi Maćka do IRONMANA i innych sportowych wyzwań. Od 1/8 dystansu, przez połówkę w Gdyni, po pełnego Ironmana w Tallinnie. Do tego Runmageddon, maratony, rower przez całą Polskę i Giewont.',
     highlight: 'Ironman Tallinn: ok. 1 TB materiału i ponad 100 godzin montażu i produkcji.',
     // pierwszy film = główny (duży player na górze podstrony)
     youtube: [
@@ -24,9 +24,9 @@ export const projects = [
       { id: 'zYg_r5qTtX8', title: 'Zrobiłem życiówkę!!! [1/4 Ironman]' },
       { id: 'auqi3ONpz1Q', title: 'Zaczynam największe wyzwanie mojego życia!! [1/8 Ironman]' },
       { id: '_6zKvs7Lwv4', title: 'Jaki jest mój limit?! (VO2max & bike fitting)' },
-      { id: '-YyfYTLpwWE', title: 'Przejechałem Polskę rowerem!! [PL południe – północ]' },
-      { id: 'OoEZxWh4frI', title: 'Ból, błoto i góry – Runmageddon Hardcore i Gravel' },
-      { id: 'frbKCOPm0Hs', title: 'Runmageddon – czy to takie trudne?!' },
+      { id: '-YyfYTLpwWE', title: 'Przejechałem Polskę rowerem!! [z południa na północ]' },
+      { id: 'OoEZxWh4frI', title: 'Ból, błoto i góry: Runmageddon Hardcore i Gravel' },
+      { id: 'frbKCOPm0Hs', title: 'Runmageddon, czy to takie trudne?!' },
       { id: '_Ev48GCUOPw', title: 'Miałem łzy w oczach!! (Maraton Warszawski)' },
       { id: '3tC1sCYkmO8', title: 'Test siły przed maratonem!!!' },
       { id: 'h5ds17S8QkE', title: 'Nie sądziłem, że to będzie takie trudne!' },

@@ -5,7 +5,7 @@ import { mkdir, writeFile, access } from 'node:fs/promises';
 import { projects } from '../src/data/projects.js';
 
 const OUT = new URL('../public/yt/', import.meta.url);
-const ID = /^[\w-]{11}$/; // format ID YouTube — nic innego nie trafi do URL-a
+const ID = /^[\w-]{11}$/; // format ID YouTube, nic innego nie trafi do URL-a
 
 let sharp = null;
 try { sharp = (await import('sharp')).default; } catch { /* bez sharp zapisujemy oryginalny JPG */ }
