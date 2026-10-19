@@ -1,0 +1,15 @@
+---
+// Pionowa rolka z własnego serwera. Nic się nie pobiera, dopóki ktoś nie kliknie „odtwórz”.
+import { u } from '../lib/url.js';
+const { src, poster, title } = Astro.props;
+---
+<figure class="reel">
+  <video controls preload="none" playsinline poster={u(poster)} width="720" height="1280" aria-label={title}>
+    <source src={u(src)} type="video/mp4" />
+  </video>
+  <figcaption>{title}</figcaption>
+</figure>
+<style>
+  .reel video { display: block; width: 100%; aspect-ratio: 9 / 16; height: auto; object-fit: cover; background: #111; }
+  figcaption { margin-top: 10px; color: #c9c9c9; }
+</style>

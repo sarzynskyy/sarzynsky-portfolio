@@ -1,0 +1,158 @@
+---
+import Base from '../../layouts/Base.astro';
+import YouTube from '../../components/YouTube.astro';
+import Reel from '../../components/Reel.astro';
+import { projects } from '../../data/projects.js';
+import { categoryLabel } from '../../data/categories.js';
+import { site } from '../../data/site.js';
+import { u } from '../../lib/url.js';
+
+export function getStaticPaths() {
+  return projects.map((p, i) => ({
+    params: { slug: p.slug },
+    props: { project: p, next: projects[(i + 1) % projects.length] },
+  }));
+}
+const { project: p, next } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const [mainVideo, ...moreVideos] = p.youtube || [];
+---
+<Base title={p.title} description={p.description}>
+  <article class="wrap">
+    <header class="top">
+      <p class="mono"><span class="dot"></span>{categoryLabel(p.category)} · {p.clients.join(', ')}{p.year && ` · ${p.year}`}</p>
+      <h1 class="display">{p.title}</h1>
+      <p class="desc">{p.description}</p>
+      {p.role && <p class="role mono">Moja rola: {p.role}</p>}
+    </header>
+
+    {mainVideo && (
+      <section aria-label="Film">
+        <div class="reveal"><YouTube id={mainVideo.id} title={mainVideo.title} large /></div>
+        <p class="cap">{mainVideo.title}</p>
+      </section>
+    )}
+
+    {p.highlight && <p class="highlight">{p.highlight}</p>}
+
+    {p.reels?.length > 0 && (
+      <section class="block" aria-labelledby="rolki">
+        <h2 id="rolki" class="mono">Rolki ({p.reels.length})</h2>
+        <ul class="reels">
+          {p.reels.map((r) => <li class="reveal"><Reel src={r.src} poster={r.poster} title={r.title} /></li>)}
+        </ul>
+      </section>
+    )}
+
+    {moreVideos.length > 0 && (
+      <section class="block" aria-labelledby="filmy">
+        <h2 id="filmy" class="mono">{mainVideo ? 'Więcej filmów' : 'Filmy'} ({moreVideos.length})</h2>
+        <ul class="ytgrid">
+          {moreVideos.map((v) => (
+            <li class="reveal">
+              <YouTube id={v.id} title={v.title} />
+              <p class="cap small">{v.title}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {p.photos?.length > 0 && (
+      <section class="block" aria-labelledby="zdjecia">
+        <h2 id="zdjecia" class="mono">Zdjęcia ({p.photos.length})</h2>
+        <div class="masonry">
+          {p.photos.map((ph, i) => (
+            <button type="button" class="ph reveal" data-i={i} aria-label={`Powiększ: ${ph.alt}`}>
+              <img src={u(ph.src)} alt={ph.alt} loading="lazy" decoding="async" />
+            </button>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="cta" aria-labelledby="cta">
+      <h2 id="cta" class="display">Chcesz coś podobnego?</h2>
+      <a class="btn mono" href={`mailto:${site.email}?subject=${encodeURIComponent('Projekt: ' + p.title)}`}>Napisz do mnie →</a>
+    </section>
+
+    <a href={`${base}/prace/${next.slug}`} class="next">
+      <span class="mono">Następny projekt</span>
+      <span class="display">{next.title} →</span>
+    </a>
+  </article>
+
+  {p.photos?.length > 0 && (
+    <div class="lightbox" role="dialog" aria-modal="true" aria-label="Powiększone zdjęcie" hidden>
+      <button type="button" class="lb-close mono" aria-label="Zamknij">Zamknij ✕</button>
+      <button type="button" class="lb-prev" aria-label="Poprzednie zdjęcie">←</button>
+      <img alt="" />
+      <button type="button" class="lb-next" aria-label="Następne zdjęcie">→</button>
+    </div>
+  )}
+</Base>
+
+<script>
+  const lb = document.querySelector<HTMLElement>('.lightbox');
+  if (lb) {
+    const imgs = [...document.querySelectorAll<HTMLImageElement>('.ph img')];
+    const view = lb.querySelector('img')!;
+    let cur = 0;
+    let opener: HTMLElement | null = null;
+    const show = (i: number) => { cur = (i + imgs.length) % imgs.length; view.src = imgs[cur].src; view.alt = imgs[cur].alt; };
+    const open = (i: number, from: HTMLElement) => { opener = from; show(i); lb.hidden = false; document.body.style.overflow = 'hidden'; lb.querySelector<HTMLElement>('.lb-close')!.focus(); };
+    const close = () => { lb.hidden = true; document.body.style.overflow = ''; opener?.focus(); };
+    document.querySelectorAll<HTMLElement>('.ph').forEach((b) => b.addEventListener('click', () => open(+b.dataset.i!, b)));
+    lb.querySelector<HTMLElement>('.lb-close')!.onclick = close;
+    lb.querySelector<HTMLElement>('.lb-prev')!.onclick = () => show(cur - 1);
+    lb.querySelector<HTMLElement>('.lb-next')!.onclick = () => show(cur + 1);
+    lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+    addEventListener('keydown', (e) => {
+      if (lb.hidden) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(cur - 1);
+      if (e.key === 'ArrowRight') show(cur + 1);
+      if (e.key === 'Tab') {
+        // fokus zostaje w oknie powiększenia
+        const f = [...lb.querySelectorAll<HTMLElement>('button')];
+        const idx = f.indexOf(document.activeElement as HTMLElement);
+        e.preventDefault();
+        f[(idx + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+      }
+    });
+  }
+</script>
+
+<style>
+  .top { padding-top: 160px; margin-bottom: 56px; max-width: 1100px; }
+  h1 { font-size: clamp(56px, 11vw, 170px); margin: 16px 0 24px; }
+  .desc { max-width: 620px; color: #c9c9c9; font-size: 18px; }
+  .role { margin-top: 20px; color: var(--fg); }
+  .cap { margin-top: 12px; font-size: 18px; }
+  .cap.small { font-size: 16px; color: #c9c9c9; }
+  .highlight { margin-top: 32px; max-width: 640px; padding-left: 16px; border-left: 2px solid var(--accent); color: #e6e6e6; font-size: 18px; }
+  .block { margin-top: 88px; }
+  .block h2 { margin-bottom: 24px; }
+  .reels { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px 16px; }
+  @media (min-width: 900px) { .reels { grid-template-columns: repeat(4, 1fr); gap: 40px 24px; } }
+  .ytgrid { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 40px 24px; }
+  .masonry { columns: 3 300px; column-gap: 16px; }
+  .ph { display: block; width: 100%; margin-bottom: 16px; border: 0; padding: 0; background: none; cursor: zoom-in; break-inside: avoid; overflow: hidden; }
+  .ph img { width: 100%; transition: transform .8s cubic-bezier(.2,.7,.2,1); }
+  .ph:hover img { transform: scale(1.03); }
+  .ph:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .cta { margin-top: 120px; padding: 56px 0; border-top: 1px solid var(--line); }
+  .cta h2 { font-size: clamp(40px, 7vw, 96px); margin-bottom: 28px; }
+  .btn { display: inline-block; padding: 18px 26px; background: var(--fg); color: var(--bg); transition: background .2s, color .2s; }
+  .btn:hover { background: var(--accent); color: #fff; }
+  .next { display: block; margin-top: 40px; padding-top: 32px; border-top: 1px solid var(--line); }
+  .next .display { display: block; font-size: clamp(40px, 8vw, 120px); margin-top: 12px; transition: color .3s; }
+  .next:hover .display { color: var(--accent); }
+  .lightbox { position: fixed; inset: 0; z-index: 90; background: rgba(5,5,5,.96); display: flex; align-items: center; justify-content: center; }
+  .lightbox[hidden] { display: none; }
+  .lightbox img { max-width: 88vw; max-height: 86vh; object-fit: contain; }
+  .lightbox button { position: absolute; background: none; border: 0; color: #fff; cursor: pointer; font-size: 28px; padding: 16px; min-width: 48px; min-height: 48px; }
+  .lightbox button:focus-visible { outline: 3px solid var(--accent); }
+  .lb-close { top: 16px; right: 16px; font-size: 12px !important; }
+  .lb-prev { left: 8px; } .lb-next { right: 8px; }
+</style>

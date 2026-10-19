@@ -1,32 +1,97 @@
-// Każdy projekt to jedna podstrona /work/<slug>.
-// type: 'video' | 'photo'
-// video: YouTube/Vimeo: wklej link do embeda (youtube.com/embed/ID lub player.vimeo.com/video/ID)
-// photos: lista adresów zdjęć (najlepiej wrzucić do public/photos/... i podać '/photos/...')
-const ph = (s) => `/photos/placeholder/${s}.jpg`; // przykładowe, podmień na swoje
+// Każdy projekt = jedna współpraca lub wydarzenie = jedna podstrona /prace/<slug>.
+//
+// Pola:
+//   slug        adres podstrony (małe litery, bez polskich znaków)
+//   title       tytuł projektu
+//   clients     dla kogo (lista: twórcy, marki); trafiają też do sekcji „Pracowałem z”
+//   category    sport | motoryzacja | reklama | eventy  (patrz categories.js)
+//   year        rok (opcjonalnie)
+//   role        Twoja rola
+//   description 1 do 3 zdań o projekcie
+//   highlight   opcjonalna wyróżniona linijka (liczby, skala)
+//   featured    true = duża sekcja na stronie głównej (kolejność jak w tej liście)
+//   cover       okładka (ścieżka w public/)
+//   youtube     [{ id, title }]           pierwszy = główny film
+//   reels       [{ src, poster, title }]  pionowe rolki z public/reels/
+//   photos      [{ src, alt }]            zdjęcia (galeria z powiększeniem)
+
+const reel = (dir, name, title) => ({ src: `/reels/${dir}/${name}.mp4`, poster: `/reels/${dir}/${name}.webp`, title });
 
 export const projects = [
   {
-    slug: 'maciek-duda-youtube',
-    title: 'Maciek Duda YouTube',
-    type: 'video',
+    slug: 'ironman-tallinn',
+    title: 'Ironman Tallinn',
+    clients: ['Maciek Duda'],
+    category: 'sport',
     year: 2026,
-    client: 'Maciek Duda · YouTube',
     role: 'Zdjęcia · Montaż · Produkcja',
+    featured: true,
     cover: '/yt/0qbRgEXaAto.webp',
+    description: 'Pełny dystans IRONMAN w Tallinnie, od przygotowań po metę. Film dla kanału Maćka Dudy.',
+    highlight: 'Ok. 1 TB materiału i ponad 100 godzin montażu i produkcji.',
+    youtube: [{ id: '0qbRgEXaAto', title: 'Zostałem Ironmanem!!! [Tallin 2026]' }],
+  },
+  {
+    slug: 'anytaxi',
+    title: 'AnyTaxi',
+    clients: ['AnyTaxi'],
+    category: 'reklama',
+    year: 2025,
+    role: 'Zdjęcia · Montaż',
+    featured: true,
+    cover: '/reels/anytaxi/anytaxi-rozpoczecie-pracy.webp',
     description:
-      'Seria filmów z drogi Maćka do IRONMANA i innych sportowych wyzwań. Od 1/8 dystansu, przez połówkę w Gdyni, po pełnego Ironmana w Tallinnie. Do tego Runmageddon, maratony, rower przez całą Polskę i Giewont.',
-    highlight: 'Ironman Tallinn: ok. 1 TB materiału i ponad 100 godzin montażu i produkcji.',
-    // pierwszy film = główny (duży player na górze podstrony)
+      'Seria rolek rekrutacyjnych dla krakowskiej firmy taksówkarskiej. Krótkie, szybkie formy na social media, które miały przyciągnąć nowych kierowców.',
+    reels: [
+      reel('anytaxi', 'anytaxi-praca-dla-studenta', 'Praca dla studenta'),
+      reel('anytaxi', 'anytaxi-rozpoczecie-pracy', 'Pierwszy dzień'),
+      reel('anytaxi', 'anytaxi-kierowca', 'Skąd ta Toyota?'),
+      reel('anytaxi', 'anytaxi-boost', 'Zostaw kontakt'),
+    ],
+  },
+  {
+    slug: 'droga-do-ironmana',
+    title: 'Droga do Ironmana',
+    clients: ['Maciek Duda'],
+    category: 'sport',
+    role: 'Zdjęcia · Montaż · Produkcja',
+    featured: true,
+    cover: '/yt/OfqiBj4TIDM.webp',
+    description:
+      'Kolejne etapy przygotowań: 1/8, 1/4 i 1/2 dystansu, IRONMAN 70.3 Gdynia oraz badanie VO2max z bike fittingiem.',
     youtube: [
-      { id: '0qbRgEXaAto', title: 'Zostałem Ironmanem!!! [Tallin 2026]' },
       { id: 'OfqiBj4TIDM', title: 'Podjazdy mnie zmiażdżyły… (Ironman 70.3 Gdynia)' },
-      { id: 'DTmH1yYfMp8', title: 'Przetrwałem 1/2 Ironman! (trudniejsze niż myślałem)' },
-      { id: 'zYg_r5qTtX8', title: 'Zrobiłem życiówkę!!! [1/4 Ironman]' },
       { id: 'auqi3ONpz1Q', title: 'Zaczynam największe wyzwanie mojego życia!! [1/8 Ironman]' },
+      { id: 'zYg_r5qTtX8', title: 'Zrobiłem życiówkę!!! [1/4 Ironman]' },
+      { id: 'DTmH1yYfMp8', title: 'Przetrwałem 1/2 Ironman! (trudniejsze niż myślałem)' },
       { id: '_6zKvs7Lwv4', title: 'Jaki jest mój limit?! (VO2max & bike fitting)' },
-      { id: '-YyfYTLpwWE', title: 'Przejechałem Polskę rowerem!! [z południa na północ]' },
+    ],
+  },
+  {
+    slug: 'runmageddon',
+    title: 'Runmageddon',
+    clients: ['Maciek Duda'],
+    category: 'sport',
+    role: 'Zdjęcia · Montaż · Produkcja',
+    featured: true,
+    cover: '/yt/OoEZxWh4frI.webp',
+    description: 'Biegi z przeszkodami Runmageddon, w tym edycja Hardcore i Gravel.',
+    youtube: [
       { id: 'OoEZxWh4frI', title: 'Ból, błoto i góry: Runmageddon Hardcore i Gravel' },
       { id: 'frbKCOPm0Hs', title: 'Runmageddon, czy to takie trudne?!' },
+    ],
+  },
+  {
+    slug: 'maratony-rower-gory',
+    title: 'Maratony, rower i góry',
+    clients: ['Maciek Duda'],
+    category: 'sport',
+    role: 'Zdjęcia · Montaż · Produkcja',
+    cover: '/yt/-YyfYTLpwWE.webp',
+    description:
+      'Maraton Warszawski, przejazd rowerem przez całą Polskę, wejście na Giewont i inne sportowe wyzwania z kanału Maćka Dudy.',
+    youtube: [
+      { id: '-YyfYTLpwWE', title: 'Przejechałem Polskę rowerem!! [z południa na północ]' },
       { id: '_Ev48GCUOPw', title: 'Miałem łzy w oczach!! (Maraton Warszawski)' },
       { id: '3tC1sCYkmO8', title: 'Test siły przed maratonem!!!' },
       { id: 'h5ds17S8QkE', title: 'Nie sądziłem, że to będzie takie trudne!' },
@@ -34,46 +99,7 @@ export const projects = [
       { id: 'prZV2-oydPI', title: 'Walka z wysokością!!! Zdobywamy Giewont' },
     ],
   },
-  {
-    slug: 'nocna-zmiana',
-    title: 'Nocna Zmiana',
-    type: 'video',
-    year: 2026,
-    client: 'Music video',
-    cover: ph('night'),
-    embed: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-    description: 'Teledysk kręcony w jedną noc na ulicach Krakowa. Neon, deszcz i ręczna kamera.',
-    credits: ['Reżyseria / zdjęcia: Sarzynsky', 'Montaż i kolor: Sarzynsky'],
-  },
-  {
-    slug: 'portrety-2026',
-    title: 'Portrety 2026',
-    type: 'photo',
-    year: 2026,
-    client: 'Personal',
-    cover: ph('portrait'),
-    description: 'Seria portretów w naturalnym świetle.',
-    photos: [ph('p1'), ph('p2'), ph('p3'), ph('p4'), ph('p5'), ph('p6')],
-  },
-  {
-    slug: 'brand-film',
-    title: 'Brand Film',
-    type: 'video',
-    year: 2025,
-    client: 'Commercial',
-    cover: ph('brand'),
-    embed: 'https://player.vimeo.com/video/76979871',
-    description: 'Krótki film wizerunkowy dla lokalnej marki.',
-    credits: ['Zdjęcia: Sarzynsky'],
-  },
-  {
-    slug: 'backstage',
-    title: 'Backstage',
-    type: 'photo',
-    year: 2025,
-    client: 'Event',
-    cover: ph('stage'),
-    description: 'Za kulisami koncertów i eventów.',
-    photos: [ph('b1'), ph('b2'), ph('b3'), ph('b4'), ph('b5')],
-  },
 ];
+
+// Wszyscy klienci i twórcy, bez powtórzeń, w kolejności pojawiania się
+export const clients = [...new Set(projects.flatMap((p) => p.clients))];

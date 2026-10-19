@@ -2,7 +2,7 @@
 import { site } from '../data/site.js';
 ---
 <footer class="wrap">
-  <a href={`mailto:${site.email}`} class="cta display">Let's shoot<span>→</span></a>
+  <a href={`mailto:${site.email}`} class="cta display">Napisz do mnie<span>→</span></a>
   <div class="row mono">
     <span>{site.location}</span>
     <a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
@@ -12,7 +12,7 @@ import { site } from '../data/site.js';
 </footer>
 <style>
   footer { border-top: 1px solid var(--line); margin-top: 120px; padding-top: 64px; padding-bottom: 32px; }
-  .cta { display: inline-flex; gap: .3em; font-size: clamp(56px, 12vw, 180px); transition: color .3s; }
+  .cta { display: inline-flex; gap: .3em; font-size: clamp(48px, 10vw, 160px); transition: color .3s; }
   .cta span { transition: transform .3s; }
   .cta:hover { color: var(--accent); }
   .cta:hover span { transform: translateX(.15em); }

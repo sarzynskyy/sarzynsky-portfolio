@@ -9,7 +9,7 @@ Każda zmiana na gałęzi `main` publikuje się automatycznie (GitHub Actions �
 |---|---|---|
 | 1 | Start: projekt sprawdzony, repo na GitHubie, strona robocza online | ✅ gotowe |
 | 2 | Wygląd: dopasowanie do Instagrama, układ z sekcjami projektów | 🔄 w trakcie |
-| 3 | Treści: projekty z Google Drive, showreel, O mnie, oferta | ⏳ |
+| 3 | Treści: projekty z Google Drive, showreel, O mnie, oferta | 🔄 w trakcie (5 projektów online) |
 | 4 | Kontakt i CTA: formularz, przyciski, RODO | ⏳ |
 | 5 | SEO: meta, Open Graph, sitemap, robots.txt, schema.org | ⏳ |
 | 6 | Hosting, domena, SSL, nagłówki bezpieczeństwa | ⏳ |
@@ -20,6 +20,14 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-19
+- **Nowa organizacja treści:** projekt = jedna współpraca lub wydarzenie, z polami: dla kogo, kategoria, rok, rola, formaty. Kategorie: Sport, Motoryzacja, Reklama i social media, Eventy.
+- **Strona główna:** duże sekcje wybranych projektów, pasek „Pracowałem z”, „Co robię” i przycisk „Wyceń projekt”.
+- **Nowa strona /prace:** wszystkie projekty z filtrem kategorii (dostępny z klawiatury, bez JS widać wszystko).
+- **Podstrony projektów pod /prace/…:** filmy YouTube, rolki, zdjęcia z powiększeniem, sekcja „Chcesz coś podobnego?”.
+- **Projekty Maćka Dudy podzielone według wydarzeń:** Ironman Tallinn, Droga do Ironmana, Runmageddon, Maratony, rower i góry.
+- **AnyTaxi:** 4 rolki rekrutacyjne (720p, 2,8 do 4,3 MB, bez plansz z numerem telefonu), ładowane dopiero po kliknięciu.
+- **Polskie menu i adresy:** Prace, O mnie, Kontakt; /o-mnie zamiast /about. Stopka: „Napisz do mnie”. Mail kontaktowy: j.sarzynsky@gmail.com.
+- **Usunięte przykładowe projekty z szablonu.**
 - **Teksty:** usunięte myślniki (— i –) z treści strony i tytułów kart przeglądarki; zastąpione kropką, przecinkiem, dwukropkiem lub „|”.
 - **Projekt „Maciek Duda — YouTube”:** podstrona z filmem Ironman Tallinn na górze i 13 kolejnymi odcinkami; opis roli (zdjęcia, montaż, produkcja) i skali projektu.
 - **Player YouTube przyjazny prywatności:** film ładuje się dopiero po kliknięciu, w trybie bez ciasteczek (youtube-nocookie); bez JavaScriptu działa jako link do YouTube.
