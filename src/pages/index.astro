@@ -61,7 +61,7 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
   .hero video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.15) 40%, rgba(11,11,11,1)); }
   .hero-text { position: absolute; bottom: 12vh; left: 0; right: 0; }
-  h1 { font-size: clamp(72px, 17vw, 260px); margin: 12px 0 16px; }
+  h1 { font-size: clamp(72px, 17vw, 260px); line-height: .88; margin: 12px 0 16px; }
   .tag { max-width: 420px; color: #cfcfcf; }
   .scroll { position: absolute; right: var(--pad); bottom: 32px; color: #fff; padding: 12px 0; }
 
@@ -71,11 +71,12 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
   .feat-media { overflow: hidden; aspect-ratio: 16 / 9; background: #151515; }
   .feat-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
   .feat:hover .feat-media img { transform: scale(1.03); }
-  .feat h3 { font-size: clamp(44px, 8vw, 120px); margin: 8px 0 14px; transition: color .3s; }
+  .feat-text > .mono:first-child { margin-bottom: 10px; }
+  .feat h3 { font-size: clamp(40px, 6.4vw, 104px); line-height: 1.02; transition: color .3s; }
   .feat:hover h3, .feat:focus-visible h3 { color: var(--accent); }
-  .desc { max-width: 560px; color: #c9c9c9; font-size: 18px; }
-  .sub { margin-top: 14px; }
-  .go { display: inline-block; margin-top: 18px; padding: 12px 0; color: var(--fg); }
+  .desc { max-width: 560px; margin-top: 20px; color: #c9c9c9; font-size: 18px; line-height: 1.55; }
+  .sub { margin-top: 20px; }
+  .go { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; color: var(--fg); }
   .feat:focus-visible { outline: 3px solid var(--accent); outline-offset: 8px; }
   @media (min-width: 900px) {
     .feat { grid-template-columns: 1.6fr 1fr; gap: 48px; align-items: end; }

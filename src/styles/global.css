@@ -27,7 +27,8 @@ body::after {
 @keyframes grain { 0%{transform:translate(0,0)} 33%{transform:translate(-3%,2%)} 66%{transform:translate(2%,-3%)} 100%{transform:translate(0,0)} }
 @media (prefers-reduced-motion: reduce) { body::after { animation: none; } }
 
-.display { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .01em; line-height: .9; }
+/* line-height 1: polskie znaki nad wielkimi literami (Ó, Ś, Ć) nie wchodzą na linię wyżej */
+.display { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .01em; line-height: 1; }
 .mono { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .wrap { padding: 0 var(--pad); }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
