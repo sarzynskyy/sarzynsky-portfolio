@@ -38,6 +38,20 @@ export const projects = [
       { id: 'OfqiBj4TIDM', title: 'Podjazdy mnie zmiażdżyły… (Ironman 70.3 Gdynia)' },
       { id: '_6zKvs7Lwv4', title: 'Jaki jest mój limit?! (VO2max & bike fitting)' },
     ],
+    // Droga do Ironmana: etapy od najniższego do najwyższego.
+    // swim/bike/run w km (standardowe dystanse triathlonu), video = ID z listy youtube wyżej.
+    journey: {
+      title: 'Droga do Ironmana',
+      intro: 'Od pomiarów w laboratorium do pełnego dystansu. Każdy etap to osobny film, kliknij, żeby obejrzeć.',
+      stages: [
+        { label: 'Start', name: 'Pomiary: VO2max i bike fitting', video: '_6zKvs7Lwv4' },
+        { label: '1/8', name: 'Początek wyzwania', swim: 0.475, bike: 22.5, run: 5.275, video: 'auqi3ONpz1Q' },
+        { label: '1/4', name: 'Życiówka', swim: 0.95, bike: 45, run: 10.55, video: 'zYg_r5qTtX8' },
+        { label: '1/2', name: 'Połowa dystansu', swim: 1.9, bike: 90, run: 21.1, video: 'DTmH1yYfMp8' },
+        { label: '70.3', name: 'IRONMAN 70.3 Gdynia', swim: 1.9, bike: 90, run: 21.1, video: 'OfqiBj4TIDM' },
+        { label: 'Pełny', name: 'IRONMAN Tallinn', swim: 3.8, bike: 180, run: 42.2, video: '0qbRgEXaAto', finish: true },
+      ],
+    },
   },
   {
     slug: 'runmageddon',

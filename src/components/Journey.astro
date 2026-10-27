@@ -1,0 +1,104 @@
+---
+// Droga do celu jako trasa: kolejne etapy połączone „szosą”, pasek dystansu rośnie z każdym etapem.
+// Na telefonie trasa biegnie pionowo po lewej, na komputerze zygzakiem przez środek.
+import YouTube from './YouTube.astro';
+const { journey, videos = [] } = Astro.props;
+const titleOf = (id) => videos.find((v) => v.id === id)?.title ?? '';
+const total = (s) => (s.swim ?? 0) + (s.bike ?? 0) + (s.run ?? 0);
+const max = Math.max(...journey.stages.map(total));
+const km = (n) => n.toLocaleString('pl-PL', { maximumFractionDigits: 2 });
+---
+<section class="journey" aria-labelledby="droga">
+  <h2 id="droga" class="display">{journey.title}</h2>
+  {journey.intro && <p class="intro">{journey.intro}</p>}
+
+  <ol class="road">
+    {journey.stages.map((s, i) => {
+      const t = total(s);
+      return (
+        <li class:list={['stage', { finish: s.finish }]}>
+          <span class="pin" aria-hidden="true">{s.finish ? '★' : String(i + 1).padStart(2, '0')}</span>
+          <div class="card">
+            <p class="label display">{s.label}</p>
+            <h3>{s.name}</h3>
+            {t > 0 && (
+              <div class="dist">
+                <div class="bar" style={`--w:${(t / max).toFixed(3)}`} aria-hidden="true"><span></span></div>
+                <p class="mono">
+                  <span class="sr">Dystans: </span>{km(t)} km
+                  <span class="split">pływanie {km(s.swim)} · rower {km(s.bike)} · bieg {km(s.run)}</span>
+                </p>
+              </div>
+            )}
+            {s.video && (
+              <div class="film">
+                <YouTube id={s.video} title={titleOf(s.video)} />
+              </div>
+            )}
+          </div>
+        </li>
+      );
+    })}
+  </ol>
+</section>
+
+<style>
+  .journey { margin-top: 120px; }
+  .journey h2 { font-size: clamp(44px, 8vw, 120px); }
+  .intro { margin: 16px 0 56px; max-width: 560px; color: #c9c9c9; font-size: 18px; }
+
+  /* Trasa: ciemny asfalt z przerywaną linią środkową + postęp w kolorze akcentu */
+  .road { --x: 22px; position: relative; list-style: none; padding: 8px 0; }
+  .road::before {
+    content: ''; position: absolute; top: 0; bottom: 0; left: calc(var(--x) - 9px); width: 18px;
+    background:
+      repeating-linear-gradient(to bottom, rgba(255,255,255,.55) 0 14px, transparent 14px 30px) center / 2px 100% no-repeat,
+      #232323;
+    border-radius: 9px;
+  }
+  .road::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: calc(var(--x) - 2px); width: 4px; border-radius: 2px;
+    background: var(--accent); transform-origin: top; transform: scaleY(1); opacity: .9;
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .road { view-timeline: --road block; }
+      .road::after { animation: drive linear both; animation-timeline: --road; animation-range: entry 20% exit 60%; }
+    }
+  }
+  @keyframes drive { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+  .stage { position: relative; padding-left: calc(var(--x) + 34px); margin-bottom: 64px; }
+  .stage:last-child { margin-bottom: 0; }
+  .pin {
+    position: absolute; left: calc(var(--x) - 22px); top: 0; z-index: 1; width: 44px; height: 44px; border-radius: 50%;
+    display: grid; place-items: center; background: var(--bg); border: 2px solid var(--fg);
+    font: 600 13px/1 var(--font-body); letter-spacing: .04em;
+  }
+  .finish .pin { background: var(--accent); border-color: var(--accent); color: #fff; font-size: 18px; }
+
+  .label { font-size: clamp(48px, 9vw, 96px); line-height: .85; }
+  .finish .label { color: var(--accent); }
+  h3 { margin-top: 8px; font-size: 20px; font-weight: 500; }
+  .dist { margin-top: 14px; max-width: 420px; }
+  .bar { height: 6px; background: #262626; border-radius: 3px; overflow: hidden; }
+  .bar span { display: block; height: 100%; width: calc(var(--w) * 100%); background: var(--fg); border-radius: 3px; }
+  .finish .bar span { background: var(--accent); }
+  .dist p { margin-top: 8px; color: var(--fg); }
+  .split { display: block; margin-top: 4px; color: var(--muted); }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .film { margin-top: 18px; max-width: 520px; }
+
+  /* Komputer: szosa przez środek, etapy na przemian po lewej i prawej */
+  @media (min-width: 900px) {
+    .road { --x: 50%; }
+    .stage { width: 50%; padding-left: 0; padding-right: 64px; margin-bottom: 24px; text-align: right; }
+    .stage .pin { left: auto; right: -22px; }
+    .stage .dist, .stage .film { margin-left: auto; }
+    .stage:nth-child(even) { margin-left: 50%; padding-right: 0; padding-left: 64px; text-align: left; }
+    .stage:nth-child(even) .pin { right: auto; left: -22px; }
+    .stage:nth-child(even) .dist, .stage:nth-child(even) .film { margin-left: 0; }
+    .stage .bar span { margin-left: auto; }
+    .stage:nth-child(even) .bar span { margin-left: 0; }
+  }
+</style>

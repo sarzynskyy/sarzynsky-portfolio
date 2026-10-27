@@ -20,6 +20,7 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-27
+- **Ironman Tallinn: „Droga do Ironmana”** jako trasa etapów: Start (pomiary VO2max i bike fitting), 1/8, 1/4, 1/2, 70.3 Gdynia i pełny dystans w Tallinnie. Przy każdym etapie film i pasek dystansu (pływanie, rower, bieg). Trasa „rysuje się” w kolorze akcentu podczas przewijania (z wyłączeniem dla osób, które mają ograniczony ruch w systemie).
 - **AnyTaxi usunięte** ze strony (projekt i pliki rolek), na prośbę właściciela.
 - **Ironman w jednym projekcie:** „Ironman Tallinn” i „Droga do Ironmana” połączone w jedną podstronę: Tallinn jako główny film, pod nim 5 odcinków przygotowań.
 - **Strona główna:** wyróżnione projekty to teraz Ironman Tallinn, Runmageddon oraz Maratony, rower i góry.

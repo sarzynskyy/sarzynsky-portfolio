@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import YouTube from '../../components/YouTube.astro';
 import Reel from '../../components/Reel.astro';
+import Journey from '../../components/Journey.astro';
 import { projects } from '../../data/projects.js';
 import { categoryLabel } from '../../data/categories.js';
 import { site } from '../../data/site.js';
@@ -15,7 +16,10 @@ export function getStaticPaths() {
 }
 const { project: p, next } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const [mainVideo, ...moreVideos] = p.youtube || [];
+const [mainVideo, ...rest] = p.youtube || [];
+// filmy pokazane na „drodze” nie powtarzają się w siatce „Więcej filmów”
+const onRoad = new Set((p.journey?.stages || []).map((s) => s.video));
+const moreVideos = rest.filter((v) => !onRoad.has(v.id));
 ---
 <Base title={p.title} description={p.description}>
   <article class="wrap">
@@ -34,6 +38,8 @@ const [mainVideo, ...moreVideos] = p.youtube || [];
     )}
 
     {p.highlight && <p class="highlight">{p.highlight}</p>}
+
+    {p.journey && <Journey journey={p.journey} videos={p.youtube} />}
 
     {p.reels?.length > 0 && (
       <section class="block" aria-labelledby="rolki">
