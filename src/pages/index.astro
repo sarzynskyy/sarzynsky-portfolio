@@ -15,6 +15,7 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
     <div class="bg" aria-hidden="true">
       <img src={u('/photos/placeholder/reel.jpg')} alt="" fetchpriority="high" decoding="async" />
       <div class="glow"></div>
+      <div class="glow2"></div>
     </div>
     <div class="shade"></div>
     <div class="hero-text wrap">
@@ -66,11 +67,14 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
 <style>
   .hero { position: relative; height: 100svh; min-height: 520px; overflow: hidden; }
   .bg { position: absolute; inset: 0; overflow: hidden; background: #111; }
-  .bg img { position: absolute; inset: -4%; width: 108%; height: 108%; max-width: none; object-fit: cover; animation: drift 26s ease-in-out infinite alternate; }
-  /* powolny „oddech” światła: czerwona poświata przesuwa się i lekko pulsuje */
-  .glow { position: absolute; inset: -20%; background: radial-gradient(40% 35% at 30% 40%, rgba(232,69,44,.35), transparent 70%); mix-blend-mode: screen; animation: glow 18s ease-in-out infinite alternate; }
-  @keyframes drift { from { transform: scale(1.04) translate(0, 0); } to { transform: scale(1) translate(-2%, -1.5%); } }
-  @keyframes glow { from { transform: translate(-6%, 4%); opacity: .55; } to { transform: translate(10%, -6%); opacity: 1; } }
+  .bg img { position: absolute; inset: -8%; width: 116%; height: 116%; max-width: none; object-fit: cover; animation: drift 16s ease-in-out infinite alternate; }
+  /* dwie plamy światła (czerwona i fioletowa) płyną powoli w przeciwnych kierunkach */
+  .glow, .glow2 { position: absolute; inset: -30%; mix-blend-mode: screen; pointer-events: none; }
+  .glow { background: radial-gradient(30% 28% at 35% 45%, rgba(232,69,44,.55), transparent 70%); animation: glow 11s ease-in-out infinite alternate; }
+  .glow2 { background: radial-gradient(28% 26% at 65% 40%, rgba(120,90,200,.35), transparent 70%); animation: glow2 14s ease-in-out infinite alternate; }
+  @keyframes drift { from { transform: scale(1.1) translate(2%, 1%); } to { transform: scale(1) translate(-3%, -2%); } }
+  @keyframes glow { from { transform: translate(-12%, 6%); opacity: .5; } to { transform: translate(14%, -8%); opacity: 1; } }
+  @keyframes glow2 { from { transform: translate(10%, -6%); opacity: .9; } to { transform: translate(-14%, 8%); opacity: .4; } }
   .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.15) 40%, rgba(11,11,11,1)); }
   .hero-text { position: absolute; bottom: 12vh; left: 0; right: 0; }
   h1 { font-size: clamp(72px, 17vw, 260px); line-height: .88; margin: 12px 0 16px; }
@@ -109,5 +113,5 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
   .ctas .btn { margin-top: 0; }
   .btn.ghost { background: none; color: var(--fg); border: 1px solid #5a5a5a; }
   .btn.ghost:hover { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-  @media (prefers-reduced-motion: reduce) { .feat-media img { transition: none; } .bg img, .glow { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .feat-media img { transition: none; } .bg img, .glow, .glow2 { animation: none; } }
 </style>

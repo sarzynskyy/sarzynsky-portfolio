@@ -20,6 +20,7 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-27
+- **Strona główna, tło:** ruch wyraźniejszy, ale nadal spokojny: przybliżenie i przesunięcie kadru w 16 s, dwie plamy światła (czerwona i fioletowa) płynące w przeciwnych kierunkach (11 s i 14 s).
 - **O mnie, zdjęcie:** prawdziwe, czarno-białe zdjęcie zamiast przykładowego (kadr 3:4, WebP 720 i 1200 px, 29 i 58 KB, bez metadanych z aparatu), z opisem alternatywnym.
 - **Opis na stronie głównej:** ogólny, bez nazwisk klientów: „Nagrywam i montuję filmy na każdą platformę: pionowe rolki, poziome filmy na YouTube i reklamy dla marek. Robię też zdjęcia.”
 - **O mnie:** nowy tekst: kamera i ciężary od zawsze, start od sesji zdjęciowych, mistrz Polski w trójboju siłowym, sport znany od środka; aktualna lista usług; nagłówek „O mnie” zamiast „About”. Zdjęcie nadal przykładowe, czeka na prawdziwe.
