@@ -29,7 +29,6 @@ export const projects = [
     cover: '/yt/0qbRgEXaAto.webp',
     description:
       'Pełny dystans IRONMAN w Tallinnie i cała droga do niego: 1/8, 1/4 i 1/2 dystansu, IRONMAN 70.3 Gdynia oraz badanie VO2max z bike fittingiem. Seria dla kanału Maćka Dudy.',
-    highlight: 'Film z Tallinna: ok. 1 TB materiału i ponad 100 godzin montażu i produkcji.',
     youtube: [
       { id: '0qbRgEXaAto', title: 'Zostałem Ironmanem!!! [Tallin 2026]' },
       { id: 'auqi3ONpz1Q', title: 'Zaczynam największe wyzwanie mojego życia!! [1/8 Ironman]' },
@@ -42,9 +41,16 @@ export const projects = [
     // swim/bike/run w km (standardowe dystanse triathlonu), video = ID z listy youtube wyżej.
     journey: {
       title: 'Droga do Ironmana',
+      // liczby w pasku pod tytułem (odliczają się przy pojawieniu na ekranie)
+      stats: [
+        { value: 1, suffix: ' TB', label: 'materiału z Tallinna' },
+        { value: 100, suffix: '+ h', label: 'montażu i produkcji' },
+        { value: 6, label: 'etapów' },
+        { value: 226, suffix: ' km', label: 'na mecie' },
+      ],
       intro: 'Od pomiarów w laboratorium do pełnego dystansu. Każdy etap to osobny film, kliknij, żeby obejrzeć.',
       stages: [
-        { label: 'Start', name: 'Pomiary: VO2max i bike fitting', video: '_6zKvs7Lwv4' },
+        { label: 'Start', name: 'Pomiary: VO2max i bike fitting', note: 'Badanie wydolności i dopasowanie roweru na początku drogi.', video: '_6zKvs7Lwv4' },
         { label: '1/8', name: 'Początek wyzwania', swim: 0.475, bike: 22.5, run: 5.275, video: 'auqi3ONpz1Q' },
         { label: '1/4', name: 'Życiówka', swim: 0.95, bike: 45, run: 10.55, video: 'zYg_r5qTtX8' },
         { label: '1/2', name: 'Połowa dystansu', swim: 1.9, bike: 90, run: 21.1, video: 'DTmH1yYfMp8' },

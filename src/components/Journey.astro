@@ -1,8 +1,8 @@
 ---
-// Droga do celu jako pozioma trasa (stepper): etapy w jednym rzędzie,
-// pod spodem jeden panel z filmem i dystansem wybranego etapu.
-// Animacje: punkty pojawiają się po kolei po wejściu w widok, czerwony pasek jedzie
-// do wybranego etapu, panel płynnie się zmienia, pasek dystansu rośnie.
+// Droga do celu: pasek liczb, pozioma trasa z rosnącymi punktami
+// i panel wybranego etapu (film duży po lewej, liczby etapu po prawej).
+// Animacje: liczby odliczają się, linia trasy się rozwija, punkty wjeżdżają po kolei,
+// czerwony pasek jedzie do wybranego etapu, kafelki i pasek dystansu rosną.
 // Wszystko wyłączone przy prefers-reduced-motion.
 import YouTube from './YouTube.astro';
 const { journey, videos = [] } = Astro.props;
@@ -11,11 +11,23 @@ const total = (s) => (s.swim ?? 0) + (s.bike ?? 0) + (s.run ?? 0);
 const nodes = journey.stages.map((s) => ({ ...s, km: total(s) }));
 const max = Math.max(...nodes.map((n) => n.km));
 const km = (n) => n.toLocaleString('pl-PL', { maximumFractionDigits: 2 });
+const last = nodes.length - 1;
 const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
 ---
 <section class="journey" aria-labelledby={`${uid}-h`} data-journey style="--p:0">
   <h2 id={`${uid}-h`} class="display">{journey.title}</h2>
   {journey.intro && <p class="intro">{journey.intro}</p>}
+
+  {journey.stats?.length > 0 && (
+    <dl class="stats">
+      {journey.stats.map((s) => (
+        <div class="stat">
+          <dt class="mono">{s.label}</dt>
+          <dd class="display"><span data-count={s.value}>{s.value.toLocaleString('pl-PL')}</span>{s.suffix ?? ''}</dd>
+        </div>
+      ))}
+    </dl>
+  )}
 
   <div class="nodes" role="tablist" aria-label="Etapy">
     {nodes.map((n, i) => (
@@ -27,7 +39,7 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
         aria-selected={i === 0 ? 'true' : 'false'}
         tabindex={i === 0 ? 0 : -1}
         class:list={['node', { finish: n.finish }]}
-        style={`--i:${i}`}
+        style={`--i:${i};--s:${(0.8 + (0.55 * i) / Math.max(1, last)).toFixed(3)}`}
       >
         <span class="dot" aria-hidden="true">{n.finish ? '★' : ''}</span>
         <span class="lbl display">{n.label}</span>
@@ -39,29 +51,37 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
   <div class="panels">
     {nodes.map((n, i) => (
       <div class="panel" role="tabpanel" id={`${uid}-panel-${i}`} aria-labelledby={`${uid}-tab-${i}`}>
+        {n.video && <div class="film"><YouTube id={n.video} title={titleOf(n.video)} /></div>}
         <div class="info">
-          <p class="mono step">Etap {i + 1} z {nodes.length}</p>
-          <p class="big display">{n.label}</p>
-          <h3>{n.name}</h3>
+          <p class="mono step">Etap {i + 1} z {nodes.length} · <span class="cur">{n.label}</span></p>
+          <h3 class="display">{n.name}</h3>
+          {n.note && <p class="note">{n.note}</p>}
           {n.km > 0 && (
-            <div class="dist">
-              <div class="bar" aria-hidden="true"><span style={`--w:${(n.km / max).toFixed(3)}`}></span></div>
-              <p class="mono kmline">{km(n.km)} km</p>
-              <p class="mono split">pływanie {km(n.swim)} km · rower {km(n.bike)} km · bieg {km(n.run)} km</p>
-            </div>
+            <>
+              <ul class="tiles" aria-label="Dystans etapu">
+                <li><span class="v display">{km(n.swim)}<small> km</small></span><span class="mono">pływanie</span></li>
+                <li><span class="v display">{km(n.bike)}<small> km</small></span><span class="mono">rower</span></li>
+                <li><span class="v display">{km(n.run)}<small> km</small></span><span class="mono">bieg</span></li>
+              </ul>
+              <div class="share">
+                <div class="bar" aria-hidden="true"><span style={`--w:${(n.km / max).toFixed(3)}`}></span></div>
+                <p class="mono"><strong>{km(n.km)} km</strong> · {Math.round((n.km / max) * 100)}% pełnego dystansu</p>
+              </div>
+            </>
           )}
           <div class="nav">
             {i > 0 && <button type="button" class="mono step-btn" data-go={i - 1}>← {nodes[i - 1].label}</button>}
-            {i < nodes.length - 1 && <button type="button" class="mono step-btn" data-go={i + 1}>{nodes[i + 1].label} →</button>}
+            {i < last && <button type="button" class="mono step-btn" data-go={i + 1}>{nodes[i + 1].label} →</button>}
           </div>
         </div>
-        {n.video && <div class="film"><YouTube id={n.video} title={titleOf(n.video)} /></div>}
       </div>
     ))}
   </div>
 </section>
 
 <script>
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   document.querySelectorAll<HTMLElement>('[data-journey]').forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
     const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
@@ -92,14 +112,30 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
     );
     select(0);
 
-    // punkty pojawiają się po kolei, gdy sekcja wjedzie w widok
+    // liczby odliczają się od zera
+    const countUp = () => {
+      if (still) return;
+      root.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+        const end = +el.dataset.count!;
+        const t0 = performance.now();
+        const dur = 1200;
+        const tick = (t: number) => {
+          const k = Math.min(1, (t - t0) / dur);
+          el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))).toLocaleString('pl-PL');
+          if (k < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    };
+
+    const go = () => { root.classList.add('drawn'); countUp(); };
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver((es) => es.forEach((e) => {
-        if (e.isIntersecting) { root.classList.add('drawn'); io.disconnect(); }
-      }), { threshold: 0.25 });
+        if (e.isIntersecting) { go(); io.disconnect(); }
+      }), { threshold: 0.2 });
       io.observe(root);
     } else {
-      root.classList.add('drawn');
+      go();
     }
   });
 </script>
@@ -109,81 +145,93 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
   .journey h2 { font-size: clamp(40px, 7vw, 96px); }
   .intro { margin: 12px 0 0; max-width: 560px; color: #c9c9c9; }
 
+  /* ---------- Pasek liczb ---------- */
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 16px; margin: 28px 0 8px; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stat { display: flex; flex-direction: column-reverse; gap: 4px; }
+  .stat dd { font-size: clamp(34px, 5vw, 64px); line-height: .9; }
+  .stat dt { color: var(--muted); }
+  @media (min-width: 760px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+
   /* ---------- Trasa ---------- */
-  .nodes { --dot: 22px; --pad: 24px; position: relative; display: flex; justify-content: space-between; margin: 28px 0 24px; }
-  .nodes::before, .nodes::after {
-    content: ''; position: absolute; left: var(--pad); top: calc(13px + var(--dot) / 2 - 2px); height: 4px; border-radius: 2px;
-  }
+  .nodes { --pad: 24px; --top: 26px; position: relative; display: flex; justify-content: space-between; align-items: flex-start; margin: 28px 0 24px; }
+  .nodes::before, .nodes::after { content: ''; position: absolute; left: var(--pad); top: calc(var(--top) - 3px); height: 6px; border-radius: 3px; }
   .nodes::before { right: var(--pad); background: #3d3d3d; }
-  .nodes::after { width: calc((100% - 2 * var(--pad)) * var(--p)); background: var(--accent); transition: width .6s cubic-bezier(.6,.1,.2,1); }
+  .nodes::after { width: calc((100% - 2 * var(--pad)) * var(--p)); background: var(--accent); box-shadow: 0 0 12px rgba(232,69,44,.5); transition: width .6s cubic-bezier(.6,.1,.2,1); }
 
   .node {
     position: relative; z-index: 1; width: 48px; display: flex; flex-direction: column; align-items: center;
     padding: 0; border: 0; background: none; color: #fff; cursor: pointer;
   }
+  /* kółko rośnie z każdym etapem (--s), środek zawsze na linii trasy */
   .dot {
-    display: grid; place-items: center; width: var(--dot); height: var(--dot); margin: 13px; border-radius: 50%;
+    --d: calc(20px * var(--s));
+    display: grid; place-items: center; width: var(--d); height: var(--d); margin: calc(26px - var(--d) / 2) 0; border-radius: 50%;
     background: var(--bg); border: 3px solid #fff; font-size: 11px; line-height: 1; color: #fff;
-    transition: transform .25s, background .25s, border-color .25s;
+    transition: transform .25s, background .25s, border-color .25s, box-shadow .25s;
   }
   .node.passed .dot { background: var(--accent); border-color: var(--accent); }
-  .node[aria-selected='true'] .dot { background: var(--accent); border-color: #fff; transform: scale(1.3); box-shadow: 0 0 0 6px rgba(232,69,44,.25); }
-  .node:hover .dot { transform: scale(1.2); }
+  .node[aria-selected='true'] .dot { background: var(--accent); border-color: #fff; transform: scale(1.25); box-shadow: 0 0 0 7px rgba(232,69,44,.25); }
+  .node:hover .dot { transform: scale(1.15); }
+  .node[aria-selected='true']:hover .dot { transform: scale(1.25); }
   .node:focus-visible { outline: none; }
   .node:focus-visible .dot { outline: 3px solid var(--accent); outline-offset: 4px; }
-  .lbl { margin-top: -4px; font-size: 15px; line-height: 1.1; letter-spacing: .02em; white-space: nowrap; transition: color .25s; }
+  .lbl { margin-top: 6px; font-size: 15px; line-height: 1.1; letter-spacing: .02em; white-space: nowrap; transition: color .25s; }
   .node[aria-selected='true'] .lbl { color: var(--accent); }
   .kmsmall { display: none; margin-top: 4px; font-size: 11px; white-space: nowrap; }
 
   /* ---------- Panel wybranego etapu ---------- */
-  .panel { display: flex; flex-direction: column; gap: 14px; }
+  .panel { display: flex; flex-direction: column; gap: 16px; }
   .panel[hidden] { display: none; }
-  .film { order: -1; }
   .js .panel:not([hidden]) { animation: fade .45s ease both; }
-  .step, .big { display: none; }
-  h3 { font-size: 18px; font-weight: 500; }
-  .dist { margin-top: 10px; max-width: 420px; }
+  .step { color: var(--muted); }
+  .cur { color: var(--accent); }
+  .info h3 { margin-top: 6px; font-size: clamp(26px, 3vw, 40px); line-height: 1; }
+  .note { margin-top: 10px; color: #c9c9c9; }
+  .tiles { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 16px; }
+  .tiles li { display: flex; flex-direction: column; gap: 6px; padding: 12px; background: #161616; border: 1px solid var(--line); }
+  .tiles .v { font-size: clamp(22px, 2.4vw, 32px); line-height: 1; }
+  .tiles small { font-size: .5em; }
+  .js .panel:not([hidden]) .tiles li { animation: pop .45s cubic-bezier(.2,.7,.2,1) both; }
+  .js .panel:not([hidden]) .tiles li:nth-child(2) { animation-delay: .07s; }
+  .js .panel:not([hidden]) .tiles li:nth-child(3) { animation-delay: .14s; }
+  .share { margin-top: 16px; }
   .bar { height: 6px; background: #262626; border-radius: 3px; overflow: hidden; }
   .bar span { display: block; height: 100%; width: calc(var(--w) * 100%); background: var(--accent); border-radius: 3px; transform-origin: left; }
-  .js .panel:not([hidden]) .bar span { animation: grow .8s .1s cubic-bezier(.2,.7,.2,1) both; }
-  .kmline { margin-top: 10px; color: var(--fg); font-size: 14px; }
-  .split { margin-top: 4px; font-size: 11px; }
-  .nav { display: flex; gap: 8px; margin-top: 12px; }
+  .js .panel:not([hidden]) .bar span { animation: grow .8s .15s cubic-bezier(.2,.7,.2,1) both; }
+  .share p { margin-top: 8px; }
+  .share strong { color: var(--fg); font-weight: 500; }
+  .nav { display: flex; gap: 8px; margin-top: 18px; }
   .step-btn { flex: 1; font: inherit; letter-spacing: inherit; text-transform: inherit; min-height: 44px; padding: 10px 16px; color: var(--fg); background: none; border: 1px solid var(--line); cursor: pointer; transition: background .2s, color .2s; }
   .step-btn:hover { background: var(--fg); color: var(--bg); }
   .step-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-  /* ---------- Komputer: większa trasa z kilometrami, opis obok filmu ---------- */
+  /* ---------- Komputer: film duży po lewej, liczby po prawej ---------- */
   @media (min-width: 760px) {
-    .nodes { --dot: 28px; --pad: 50px; margin: 40px 0 36px; }
+    .nodes { --pad: 50px; margin: 36px 0 32px; }
     .node { width: 100px; }
-    .lbl { font-size: clamp(22px, 2.6vw, 34px); }
+    .dot { --d: calc(26px * var(--s)); }
+    .lbl { font-size: clamp(22px, 2.4vw, 32px); }
     .kmsmall { display: block; }
-    .panel { display: grid; grid-template-columns: 1fr minmax(0, 560px); gap: 48px; align-items: start; }
-    .film { order: 2; }
-    .step, .big { display: block; }
-    .step { margin-bottom: 4px; }
-    .big { font-size: clamp(56px, 7vw, 104px); line-height: .85; }
-    h3 { margin-top: 8px; font-size: 20px; }
-    .dist { margin-top: 16px; }
-    .split { font-size: 12px; }
-    .nav { margin-top: 24px; }
+  }
+  @media (min-width: 900px) {
+    .panel { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 40px; align-items: center; }
     .step-btn { flex: 0 1 auto; }
   }
 
   /* ---------- Animacje wejścia ---------- */
-  .js .node { opacity: 0; transform: translateY(10px) scale(.8); transition: opacity .35s, transform .35s; transition-delay: calc(.1s + var(--i) * .1s); }
+  .js .node { opacity: 0; transform: translateY(10px) scale(.8); transition: opacity .35s, transform .35s; transition-delay: calc(.15s + var(--i) * .1s); }
   .js.drawn .node { opacity: 1; transform: none; }
   .js .nodes::before { transform-origin: left; transform: scaleX(0); transition: transform .9s cubic-bezier(.6,.1,.2,1); }
   .js.drawn .nodes::before { transform: scaleX(1); }
 
   @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes pop { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 
   @media (prefers-reduced-motion: reduce) {
     .js .node, .js .nodes::before, .nodes::after, .dot, .lbl { transition: none !important; }
     .js .node { opacity: 1; transform: none; }
     .js .nodes::before { transform: none; }
-    .js .panel:not([hidden]), .js .panel:not([hidden]) .bar span { animation: none; }
+    .js .panel:not([hidden]), .js .panel:not([hidden]) .bar span, .js .panel:not([hidden]) .tiles li { animation: none; }
   }
 </style>
