@@ -13,7 +13,7 @@
  * (strona musi go znać), dlatego skrypt sam pilnuje spamu i poprawności danych.
  */
 
-const TO = 'j.sarzynsky@gmail.com';   // gdzie przychodzą powiadomienia
+const TO = 'j.sarzynsky+leady@gmail.com'; // +leady: ta sama skrzynka, a filtr w Gmailu wrzuca to do etykiety „Leady”
 const SHEET = 'Leady';
 const ADD_TO_CALENDAR = true;         // przypomnienie „oddzwoń” w kalendarzu
 const CALL_HOUR = 17;                 // o której przypomnienie (następny dzień roboczy)
