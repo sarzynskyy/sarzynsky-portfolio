@@ -1,104 +1,209 @@
 ---
-// Droga do celu jako trasa: kolejne etapy połączone „szosą”, pasek dystansu rośnie z każdym etapem.
-// Na telefonie trasa biegnie pionowo po lewej, na komputerze zygzakiem przez środek.
+// Droga do celu jako krótka trasa pod górę: etapy to punkty na „szosie”,
+// pod spodem jeden panel z filmem i dystansem wybranego etapu.
+// Animacje: trasa rysuje się po wejściu w widok, punkty pojawiają się po kolei,
+// czerwony odcinek jedzie do wybranego etapu. Wszystko wyłączone przy prefers-reduced-motion.
 import YouTube from './YouTube.astro';
 const { journey, videos = [] } = Astro.props;
+const stages = journey.stages;
 const titleOf = (id) => videos.find((v) => v.id === id)?.title ?? '';
 const total = (s) => (s.swim ?? 0) + (s.bike ?? 0) + (s.run ?? 0);
-const max = Math.max(...journey.stages.map(total));
+const max = Math.max(...stages.map(total));
 const km = (n) => n.toLocaleString('pl-PL', { maximumFractionDigits: 2 });
+
+// Trasa: krzywa Béziera w układzie 1000 x 400 (z lewego dołu do prawej góry, lekko falująca)
+const P = [[40, 360], [380, 380], [600, 30], [960, 40]];
+const at = (t) => {
+  const u = 1 - t;
+  const k = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
+  return [0, 1].map((d) => k.reduce((s, kk, i) => s + kk * P[i][d], 0));
+};
+const path = `M${P[0]} C${P[1]} ${P[2]} ${P[3]}`;
+// długość łuku, żeby postęp na trasie zatrzymywał się dokładnie na punkcie
+const N = 400;
+const pts = Array.from({ length: N + 1 }, (_, i) => at(i / N));
+const cum = pts.map((p, i) => (i ? Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) : 0));
+for (let i = 1; i < cum.length; i++) cum[i] += cum[i - 1];
+const L = cum[N];
+const nodes = stages.map((s, i) => {
+  const t = stages.length === 1 ? 1 : i / (stages.length - 1);
+  const [x, y] = at(t);
+  return { ...s, x: x / 10, y: y / 4, frac: cum[Math.round(t * N)] / L, km: total(s) };
+});
+const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
 ---
-<section class="journey" aria-labelledby="droga">
-  <h2 id="droga" class="display">{journey.title}</h2>
+<section class="journey" aria-labelledby={`${uid}-h`} data-journey>
+  <h2 id={`${uid}-h`} class="display">{journey.title}</h2>
   {journey.intro && <p class="intro">{journey.intro}</p>}
 
-  <ol class="road">
-    {journey.stages.map((s, i) => {
-      const t = total(s);
-      return (
-        <li class:list={['stage', { finish: s.finish }]}>
-          <span class="pin" aria-hidden="true">{s.finish ? '★' : String(i + 1).padStart(2, '0')}</span>
-          <div class="card">
-            <p class="label display">{s.label}</p>
-            <h3>{s.name}</h3>
-            {t > 0 && (
-              <div class="dist">
-                <div class="bar" style={`--w:${(t / max).toFixed(3)}`} aria-hidden="true"><span></span></div>
-                <p class="mono">
-                  <span class="sr">Dystans: </span>{km(t)} km
-                  <span class="split">pływanie {km(s.swim)} · rower {km(s.bike)} · bieg {km(s.run)}</span>
-                </p>
-              </div>
-            )}
-            {s.video && (
-              <div class="film">
-                <YouTube id={s.video} title={titleOf(s.video)} />
-              </div>
-            )}
+  <div class="map">
+    <svg viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path class="asphalt" d={path} />
+      <path class="lane" d={path} />
+      <path class="progress" d={path} pathLength="1" style={`--to:${nodes[0].frac}`} />
+    </svg>
+    <div class="nodes" role="tablist" aria-label="Etapy">
+      {nodes.map((n, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`${uid}-tab-${i}`}
+          aria-controls={`${uid}-panel-${i}`}
+          aria-selected={i === 0 ? 'true' : 'false'}
+          tabindex={i === 0 ? 0 : -1}
+          class:list={['node', { finish: n.finish, flip: i === nodes.length - 1 }]}
+          style={`left:${n.x}%;top:${n.y}%;--i:${i};--frac:${n.frac}`}
+        >
+          <span class="dot" aria-hidden="true">{n.finish ? '★' : ''}</span>
+          <span class="tag">
+            <span class="lbl display">{n.label}</span>
+            {n.km > 0 && <span class="kmsmall mono">{km(n.km)} km</span>}
+          </span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="panels">
+    {nodes.map((n, i) => (
+      <div class="panel" role="tabpanel" id={`${uid}-panel-${i}`} aria-labelledby={`${uid}-tab-${i}`} data-i={i}>
+        <div class="info">
+          <p class="mono step">Etap {i + 1} z {nodes.length}</p>
+          <p class="big display">{n.label}</p>
+          <h3>{n.name}</h3>
+          {n.km > 0 && (
+            <div class="dist">
+              <div class="bar" aria-hidden="true"><span style={`--w:${(n.km / max).toFixed(3)}`}></span></div>
+              <p class="mono kmline">{km(n.km)} km</p>
+              <p class="mono split">pływanie {km(n.swim)} km · rower {km(n.bike)} km · bieg {km(n.run)} km</p>
+            </div>
+          )}
+          <div class="nav">
+            {i > 0 && <button type="button" class="mono step-btn" data-go={i - 1}>← {nodes[i - 1].label}</button>}
+            {i < nodes.length - 1 && <button type="button" class="mono step-btn" data-go={i + 1}>{nodes[i + 1].label} →</button>}
           </div>
-        </li>
-      );
-    })}
-  </ol>
+        </div>
+        {n.video && <div class="film"><YouTube id={n.video} title={titleOf(n.video)} /></div>}
+      </div>
+    ))}
+  </div>
 </section>
 
+<script>
+  document.querySelectorAll<HTMLElement>('[data-journey]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    const progress = root.querySelector<SVGPathElement>('.progress')!;
+    root.classList.add('js');
+
+    const select = (i: number, focus = false) => {
+      tabs.forEach((t, k) => {
+        const on = k === i;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        t.classList.toggle('passed', k < i);
+      });
+      panels.forEach((p, k) => (p.hidden = k !== i));
+      progress.style.setProperty('--to', tabs[i].style.getPropertyValue('--frac'));
+      if (focus) tabs[i].focus();
+    };
+
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(i));
+      t.addEventListener('keydown', (e) => {
+        const last = tabs.length - 1;
+        const map: Record<string, number> = { ArrowRight: i + 1, ArrowUp: i + 1, ArrowLeft: i - 1, ArrowDown: i - 1, Home: 0, End: last };
+        if (e.key in map) { e.preventDefault(); select(Math.max(0, Math.min(last, map[e.key])), true); }
+      });
+    });
+    root.querySelectorAll<HTMLButtonElement>('[data-go]').forEach((b) =>
+      b.addEventListener('click', () => select(+b.dataset.go!, true))
+    );
+    select(0);
+
+    // trasa „rysuje się”, gdy sekcja wjedzie w widok
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { root.classList.add('drawn'); io.disconnect(); }
+    }), { threshold: 0.3 });
+    io.observe(root);
+  });
+</script>
+
 <style>
-  .journey { margin-top: 120px; }
-  .journey h2 { font-size: clamp(44px, 8vw, 120px); }
-  .intro { margin: 16px 0 56px; max-width: 560px; color: #c9c9c9; font-size: 18px; }
+  .journey { margin-top: 112px; }
+  .journey h2 { font-size: clamp(40px, 7vw, 96px); }
+  .intro { margin: 12px 0 8px; max-width: 560px; color: #c9c9c9; }
 
-  /* Trasa: ciemny asfalt z przerywaną linią środkową + postęp w kolorze akcentu */
-  .road { --x: 22px; position: relative; list-style: none; padding: 8px 0; }
-  .road::before {
-    content: ''; position: absolute; top: 0; bottom: 0; left: calc(var(--x) - 9px); width: 18px;
-    background:
-      repeating-linear-gradient(to bottom, rgba(255,255,255,.55) 0 14px, transparent 14px 30px) center / 2px 100% no-repeat,
-      #232323;
-    border-radius: 9px;
-  }
-  .road::after {
-    content: ''; position: absolute; top: 0; bottom: 0; left: calc(var(--x) - 2px); width: 4px; border-radius: 2px;
-    background: var(--accent); transform-origin: top; transform: scaleY(1); opacity: .9;
-  }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .road { view-timeline: --road block; }
-      .road::after { animation: drive linear both; animation-timeline: --road; animation-range: entry 20% exit 60%; }
-    }
-  }
-  @keyframes drive { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  /* ---------- Mapa ---------- */
+  .map { position: relative; aspect-ratio: 1000 / 520; margin: 8px 0 24px; }
+  @media (min-width: 760px) { .map { aspect-ratio: 1000 / 340; } }
+  svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  svg path { fill: none; stroke-linecap: round; }
+  .asphalt, .lane { vector-effect: non-scaling-stroke; }
+  .asphalt { stroke: #242424; stroke-width: 22px; }
+  .lane { stroke: rgba(255,255,255,.5); stroke-width: 2px; stroke-dasharray: 10 12; }
+  /* postęp: bez non-scaling-stroke, żeby pathLength=1 liczył się zawsze tak samo */
+  .progress { stroke: var(--accent); stroke-width: 9; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--to)); transition: stroke-dashoffset .7s cubic-bezier(.6,.1,.2,1); }
 
-  .stage { position: relative; padding-left: calc(var(--x) + 34px); margin-bottom: 64px; }
-  .stage:last-child { margin-bottom: 0; }
-  .pin {
-    position: absolute; left: calc(var(--x) - 22px); top: 0; z-index: 1; width: 44px; height: 44px; border-radius: 50%;
-    display: grid; place-items: center; background: var(--bg); border: 2px solid var(--fg);
-    font: 600 13px/1 var(--font-body); letter-spacing: .04em;
+  .node {
+    position: absolute; transform: translate(-50%, -50%);
+    width: 48px; height: 48px; padding: 0; border: 0; background: none; color: var(--fg); cursor: pointer;
   }
-  .finish .pin { background: var(--accent); border-color: var(--accent); color: #fff; font-size: 18px; }
+  .dot {
+    display: grid; place-items: center; width: 24px; height: 24px; margin: 12px; border-radius: 50%;
+    background: var(--bg); border: 3px solid var(--fg); font-size: 12px; line-height: 1;
+    transition: transform .25s, background .25s, border-color .25s;
+  }
+  .node.passed .dot { background: var(--accent); border-color: var(--accent); }
+  .node[aria-selected='true'] .dot { background: var(--accent); border-color: #fff; transform: scale(1.3); box-shadow: 0 0 0 6px rgba(232,69,44,.25); }
+  .node.finish .dot { color: #fff; }
+  .node:hover .dot { transform: scale(1.2); }
+  .node:focus-visible { outline: none; }
+  .node:focus-visible .dot { outline: 3px solid var(--accent); outline-offset: 4px; }
 
-  .label { font-size: clamp(48px, 9vw, 96px); line-height: .85; }
-  .finish .label { color: var(--accent); }
+  /* podpis pod punktem po prawej (trasa idzie w górę w prawo, więc tam jest miejsce) */
+  .tag { position: absolute; left: 34px; top: 34px; display: flex; flex-direction: column; align-items: flex-start; white-space: nowrap; pointer-events: none; }
+  .node.flip .tag { left: auto; right: 34px; top: auto; bottom: 30px; align-items: flex-end; }
+  .lbl { font-size: clamp(18px, 2.6vw, 34px); line-height: 1; transition: color .25s; }
+  .kmsmall { font-size: 10px; margin-top: 2px; }
+  .node[aria-selected='true'] .lbl { color: var(--accent); }
+  @media (max-width: 759px) { .kmsmall { display: none; } .tag { left: 26px; top: 30px; } }
+
+  /* ---------- Panel wybranego etapu ---------- */
+  .panel { display: grid; gap: 20px; }
+  .panel[hidden] { display: none; }
+  @media (min-width: 900px) { .panel { grid-template-columns: 1fr 1.35fr; gap: 48px; align-items: start; } }
+  .js .panel:not([hidden]) { animation: fade .45s ease both; }
+  .step { margin-bottom: 4px; }
+  .big { font-size: clamp(56px, 9vw, 120px); line-height: .85; }
   h3 { margin-top: 8px; font-size: 20px; font-weight: 500; }
-  .dist { margin-top: 14px; max-width: 420px; }
+  .dist { margin-top: 16px; max-width: 420px; }
   .bar { height: 6px; background: #262626; border-radius: 3px; overflow: hidden; }
-  .bar span { display: block; height: 100%; width: calc(var(--w) * 100%); background: var(--fg); border-radius: 3px; }
-  .finish .bar span { background: var(--accent); }
-  .dist p { margin-top: 8px; color: var(--fg); }
-  .split { display: block; margin-top: 4px; color: var(--muted); }
-  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .film { margin-top: 18px; max-width: 520px; }
+  .bar span { display: block; height: 100%; width: calc(var(--w) * 100%); background: var(--accent); border-radius: 3px; transform-origin: left; }
+  .js .panel:not([hidden]) .bar span { animation: grow .8s .1s cubic-bezier(.2,.7,.2,1) both; }
+  .kmline { margin-top: 10px; color: var(--fg); font-size: 14px; }
+  .split { margin-top: 4px; }
+  .nav { display: flex; gap: 8px; margin-top: 24px; }
+  .step-btn { font: inherit; letter-spacing: inherit; text-transform: inherit; min-height: 44px; padding: 10px 16px; color: var(--fg); background: none; border: 1px solid var(--line); cursor: pointer; transition: background .2s, color .2s; }
+  .step-btn:hover { background: var(--fg); color: var(--bg); }
+  .step-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-  /* Komputer: szosa przez środek, etapy na przemian po lewej i prawej */
-  @media (min-width: 900px) {
-    .road { --x: 50%; }
-    .stage { width: 50%; padding-left: 0; padding-right: 64px; margin-bottom: 24px; text-align: right; }
-    .stage .pin { left: auto; right: -22px; }
-    .stage .dist, .stage .film { margin-left: auto; }
-    .stage:nth-child(even) { margin-left: 50%; padding-right: 0; padding-left: 64px; text-align: left; }
-    .stage:nth-child(even) .pin { right: auto; left: -22px; }
-    .stage:nth-child(even) .dist, .stage:nth-child(even) .film { margin-left: 0; }
-    .stage .bar span { margin-left: auto; }
-    .stage:nth-child(even) .bar span { margin-left: 0; }
+  /* ---------- Animacje wejścia ---------- */
+  .js svg { clip-path: inset(0 100% 0 0); transition: clip-path 1.3s cubic-bezier(.6,.1,.2,1); }
+  .js .lane { opacity: 0; transition: opacity .6s 1s; }
+  .js .progress { opacity: 0; transition: stroke-dashoffset .7s cubic-bezier(.6,.1,.2,1), opacity .4s 1.2s; }
+  .js .node { opacity: 0; transform: translate(-50%, -50%) scale(.6); transition: opacity .35s, transform .35s; transition-delay: calc(.35s + var(--i) * .12s); }
+  .js.drawn svg { clip-path: inset(0 0 0 0); }
+  .js.drawn .lane, .js.drawn .progress { opacity: 1; }
+  .js.drawn .node { opacity: 1; transform: translate(-50%, -50%); }
+
+  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .js svg, .js .lane, .js .progress, .js .node, .dot { transition: none !important; }
+    .js svg { clip-path: none; }
+    .js .lane, .js .progress, .js .node { opacity: 1; transform: translate(-50%, -50%); }
+    .js .panel:not([hidden]), .js .panel:not([hidden]) .bar span { animation: none; }
   }
 </style>
