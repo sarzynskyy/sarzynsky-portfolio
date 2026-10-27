@@ -1,6 +1,6 @@
 export const site = {
   name: 'SARZYNSKY',
-  tagline: 'Kręcę i montuję filmy na YouTube Maćka Dudy. Dla marek robię rolki i zdjęcia.',
+  tagline: 'Nagrywam i montuję filmy na każdą platformę: pionowe rolki, poziome filmy na YouTube i reklamy dla marek. Robię też zdjęcia.',
   email: 'j.sarzynsky@gmail.com',
   instagram: 'https://instagram.com/sarzynsky',
   location: 'Kraków, PL',

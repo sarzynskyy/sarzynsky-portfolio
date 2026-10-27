@@ -2,18 +2,20 @@
 import Base from '../layouts/Base.astro';
 import { site } from '../data/site.js';
 import { u } from '../lib/url.js';
-const services = ['Teledyski', 'Reklamy i brand filmy', 'Eventy i koncerty', 'Portrety', 'Content na social media', 'Montaż i color grading'];
+const services = ['Rolki i content na social media', 'Filmy na YouTube', 'Reklamy dla marek', 'Sport i eventy', 'Motoryzacja', 'Zdjęcia', 'Montaż i color grading'];
 ---
-<Base title="O mnie" crumbs={[{ label: 'O mnie' }]}>
+<Base title="O mnie" description="Jan Sarzyński: nagrywam i montuję filmy oraz robię zdjęcia. Mistrz Polski w trójboju siłowym, Kraków." crumbs={[{ label: 'O mnie' }]}>
   <section class="wrap about">
     <div class="photo reveal">
-      <img src={u("/photos/placeholder/me.jpg")} alt={site.name} />
+      <img src={u("/photos/placeholder/me.jpg")} alt="Jan Sarzyński" />
     </div>
     <div class="text">
-      <p class="mono"><span class="dot"></span>About</p>
-      <h1 class="display">Hej, tu {site.name}.</h1>
-      <p class="lead">Robię video i zdjęcia, które mają klimat. Teledyski, reklamy, eventy i portrety. Od pomysłu, przez zdjęcia, po montaż i kolor.</p>
-      <p>Działam z {site.location}, ale chętnie jadę tam, gdzie jest ciekawe światło.</p>
+      <p class="mono"><span class="dot"></span>O mnie</p>
+      <h1 class="display">Cześć, jestem Jan.</h1>
+      <p class="lead">Nagrywam i montuję filmy. Od pomysłu i ujęć na planie, przez montaż i kolor, po gotowy plik na YouTube, Instagrama czy TikToka.</p>
+      <p>Od zawsze ciągnęło mnie do dwóch rzeczy: kamery i ciężarów. Zaczynałem od sesji zdjęciowych, dziś głównie nagrywam i montuję: rolki dla marek, dłuższe filmy na YouTube, sport, eventy i motoryzację.</p>
+      <p>Poza kamerą trenuję trójbój siłowy i jestem mistrzem Polski w tej dyscyplinie. Sport znam od środka, wiem, jak wygląda wysiłek, który chcę pokazać w kadrze. Dlatego najlepiej czuję się tam, gdzie coś się dzieje: na zawodach, na trasie, na treningu.</p>
+      <p>Działam z Krakowa i dojeżdżam tam, gdzie trzeba.</p>
       <h2 class="mono">Co robię</h2>
       <ul>{services.map(s => <li>{s}</li>)}</ul>
       <a class="btn mono" href={`mailto:${site.email}`} data-cart-open data-topic="Kontakt">Napisz do mnie →</a>
@@ -26,6 +28,7 @@ const services = ['Teledyski', 'Reklamy i brand filmy', 'Eventy i koncerty', 'Po
   h1 { font-size: clamp(48px, 8vw, 120px); margin: 16px 0 28px; }
   .lead { font-size: clamp(18px, 2vw, 24px); margin-bottom: 16px; }
   .text > p { color: #c9c9c9; max-width: 560px; }
+  .text > p + p { margin-top: 14px; }
   h2 { margin: 48px 0 16px; }
   ul { list-style: none; border-top: 1px solid var(--line); }
   li { padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 18px; }

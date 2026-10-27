@@ -20,6 +20,8 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-27
+- **Opis na stronie głównej:** ogólny, bez nazwisk klientów: „Nagrywam i montuję filmy na każdą platformę: pionowe rolki, poziome filmy na YouTube i reklamy dla marek. Robię też zdjęcia.”
+- **O mnie:** nowy tekst: kamera i ciężary od zawsze, start od sesji zdjęciowych, mistrz Polski w trójboju siłowym, sport znany od środka; aktualna lista usług; nagłówek „O mnie” zamiast „About”. Zdjęcie nadal przykładowe, czeka na prawdziwe.
 - **Strona główna, tło:** na prośbę właściciela wraca czerwony kadr (pętla z ujęć motoryzacji usunięta, showreel z poziomych nagrań wybierze Jan). Kadr jest teraz zwykłym obrazem, więc wyświetla się też na telefonie, i ma subtelny ruch: powolne przybliżenie (26 s) oraz przesuwająca się czerwona poświata (18 s). Przy ograniczonym ruchu nieruchomy.
 - **Strona główna, tło:** zamiast pustego odtwarzacza (showreel nie istniał, na telefonie było czarne tło) zapętlone 14 s ujęć z moich realizacji motoryzacyjnych, spowolnione i przyciemnione, z delikatnym, powolnym przybliżeniem. Na telefonie osobna wersja pionowa, na komputerze pozioma (każda ok. 1 MB). Film gra tylko wtedy, gdy jest na ekranie; przy ograniczonym ruchu albo oszczędzaniu danych zostaje sama klatka. Kadry bez tablic rejestracyjnych.
 - **Strona główna, opis:** „Kręcę i montuję filmy na YouTube Maćka Dudy. Dla marek robię rolki i zdjęcia.” zamiast „Video & photo. Ruch, światło, ludzie.”; nad tytułem „Kraków · wideo i zdjęcia” zamiast „Showreel 2026”.
