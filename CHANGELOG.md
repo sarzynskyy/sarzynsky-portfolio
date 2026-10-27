@@ -20,6 +20,8 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-27
+- **Nowa strona /cennik:** pojedyncza rolka jako kotwica cenowa (1 200 zł), pakiety Start (3 rolki), Seria (6 rolek, polecany, wyróżniony na środku) i Pro (10 rolek) z ceną za rolkę, przekreśloną ceną pojedynczą i „taniej o X%”; lista, co wchodzi w pakiet; dodatki; wycena indywidualna; FAQ. Animacje: karty wjeżdżają po kolei, ceny odliczają się, punkty listy pojawiają się kolejno, polecany pakiet delikatnie pulsuje (wyłączone przy ograniczonym ruchu). Ceny to propozycja do zatwierdzenia, zmienia się je w src/data/pricing.js.
+- **Menu:** dodany link „Cennik”; na stronie głównej przycisk „Zobacz cennik” obok „Wyceń projekt”.
 - **Interlinia nagłówków 1,3 (zmierzona):** w kroju Anton kreska nad Ó sięga 1,11 em nad linię pisma, a przecinek 0,125 em pod nią; przy 1,15 nadal się stykały.
 - **Interlinia nagłówków 1,15:** przecinek w pierwszej linii i kreska nad Ó w drugiej (np. „Maratony, rower i góry”) już się nie stykają.
 - **Odstępy:** większa interlinia dużych nagłówków (polskie znaki nie nachodzą na linię wyżej); w sekcjach projektów na stronie głównej równe odstępy: kategoria, tytuł, opis, podpis, „Zobacz projekt”; nieco mniejszy tytuł projektu.

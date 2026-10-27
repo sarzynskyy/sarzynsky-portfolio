@@ -52,7 +52,10 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
     <ul class="services">
       {services.map((s) => <li>{s}</li>)}
     </ul>
-    <a class="btn mono" href={`mailto:${site.email}`}>Wyceń projekt →</a>
+    <div class="ctas">
+      <a class="btn mono" href={`${base}/cennik`}>Zobacz cennik →</a>
+      <a class="btn ghost mono" href={`mailto:${site.email}`}>Wyceń projekt</a>
+    </div>
   </section>
 </Base>
 
@@ -93,5 +96,9 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
   .services li { padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 18px; }
   .btn { display: inline-block; margin-top: 40px; padding: 18px 26px; background: var(--fg); color: var(--bg); transition: background .2s, color .2s; }
   .btn:hover { background: var(--accent); color: #fff; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px; }
+  .ctas .btn { margin-top: 0; }
+  .btn.ghost { background: none; color: var(--fg); border: 1px solid #5a5a5a; }
+  .btn.ghost:hover { background: var(--fg); color: var(--bg); border-color: var(--fg); }
   @media (prefers-reduced-motion: reduce) { .feat-media img { transition: none; } }
 </style>
