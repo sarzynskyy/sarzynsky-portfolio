@@ -192,7 +192,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
   .addons ul { list-style: none; display: grid; gap: 12px; }
   @media (min-width: 700px) { .addons ul { grid-template-columns: repeat(2, 1fr); } }
   @media (min-width: 1100px) { .addons ul { grid-template-columns: repeat(4, 1fr); } }
-  .addons li { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: 'plus txt txt' 'plus price add'; grid-template-rows: 1fr auto; gap: 6px 14px; padding: 20px; background: #121212; border: 1px solid var(--line); transition: border-color .25s, transform .25s; }
+  .addons li { display: grid; grid-template-columns: auto 1fr; grid-template-areas: 'plus txt' 'plus price' 'plus add'; grid-template-rows: 1fr auto auto; gap: 6px 14px; padding: 20px; background: #121212; border: 1px solid var(--line); transition: border-color .25s, transform .25s; }
   .addons li:hover { border-color: var(--accent); transform: translateY(-3px); }
   /* plus rysowany z dwóch kresek: zawsze idealnie na środku kółka (znak tekstowy „+” siedzi na linii pisma i ucieka w dół) */
   .plus { grid-area: plus; position: relative; width: 34px; height: 34px; border-radius: 50%; background: rgba(232,69,44,.15); }
@@ -201,8 +201,8 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
   .txt { grid-area: txt; display: flex; flex-direction: column; gap: 4px; }
   .txt strong { font-weight: 500; color: #fff; }
   .note { font-size: 14px; color: #a8a8a8; line-height: 1.4; }
-  .aprice { grid-area: price; align-self: center; margin-top: 6px; font-size: 26px; color: var(--accent); }
-  .add { grid-area: add; align-self: end; min-height: 44px; min-width: 44px; padding: 0 14px; background: none; border: 1px solid #5a5a5a; color: var(--fg); cursor: pointer; font-size: 12px; transition: background .2s, color .2s, border-color .2s; }
+  .aprice { grid-area: price; margin-top: 6px; white-space: nowrap; font-size: 26px; color: var(--accent); }
+  .add { grid-area: add; justify-self: start; margin-top: 4px; min-height: 44px; min-width: 44px; padding: 0 14px; background: none; border: 1px solid #5a5a5a; color: var(--fg); cursor: pointer; font-size: 12px; transition: background .2s, color .2s, border-color .2s; }
   .add:hover { border-color: var(--accent); color: #fff; }
   .add[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
   .add:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }

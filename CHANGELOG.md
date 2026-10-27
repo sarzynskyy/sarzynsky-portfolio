@@ -10,7 +10,7 @@ Każda zmiana na gałęzi `main` publikuje się automatycznie (GitHub Actions �
 | 1 | Start: projekt sprawdzony, repo na GitHubie, strona robocza online | ✅ gotowe |
 | 2 | Wygląd: dopasowanie do Instagrama, układ z sekcjami projektów | 🔄 w trakcie |
 | 3 | Treści: projekty z Google Drive, showreel, O mnie, oferta | 🔄 w trakcie (3 projekty online) |
-| 4 | Kontakt i CTA: formularz, przyciski, RODO | ⏳ |
+| 4 | Kontakt i CTA: formularz, przyciski, RODO | 🔄 w trakcie (koszyk zapytań działa przez pocztę; czeka na wybór usługi formularzy i rezerwacji) |
 | 5 | SEO: meta, Open Graph, sitemap, robots.txt, schema.org | ⏳ |
 | 6 | Hosting, domena, SSL, nagłówki bezpieczeństwa | ⏳ |
 | 7 | Google Search Console, audyt końcowy (UX/UI, WCAG 2.2 AA, Lighthouse) | ⏳ |
@@ -20,6 +20,9 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-27
+- **Koszyk zapytań (bez płatności):** ikona koszyka z licznikiem w pasku menu na każdej stronie. W cenniku przyciski „Wybieram…” i „Dodaj” wkładają pakiet (jeden naraz) i dodatki do koszyka; koszyk liczy kwotę szacunkową (dodatkowe rolki z ilością, wersja pozioma razy liczba rolek, ekspres +30% od sumy). W koszyku formularz: imię, e-mail, telefon, firma, forma kontaktu (e-mail, telefon, konsultacja online), termin, opis i zgoda na użycie danych. Na razie „Wyślij zapytanie” otwiera pocztę klienta z gotową wiadomością; po wyborze usługi zapytania będą trafiać prosto na Gmail. Koszyk pamięta tylko identyfikatory pozycji w przeglądarce, bez danych osobowych; dane z formularza nie są nigdzie zapisywane.
+- **Menu na telefonie:** logo, koszyk i przycisk menu; linki w rozwijanym panelu pod paskiem (duże pola, Esc zamyka). Wcześniej po dodaniu koszyka menu nie mieściło się na wąskim ekranie.
+- **Cennik:** tytuł i opis po lewej, jak na pozostałych podstronach; pakiety, dodatki i FAQ zostają na środku. Krótka instrukcja pod pakietami, jak działa koszyk.
 - **Cennik, spójność i bezpieczeństwo prawne:** cała strona w jednej, wyśrodkowanej kolumnie (max 1200 px), nagłówki sekcji na środku; pojedyncza rolka 990 zł, Start 2 490 zł; zastrzeżenie, że ceny są orientacyjne i nie stanowią oferty (art. 66 § 1 k.c.), plus pytanie „Czy to ostateczne ceny?” w FAQ; plusy w dodatkach rysowane, więc idealnie na środku; uczciwy opis wersji poziomej (przekadrowanie, zaplanowane przed zdjęciami).
 - **Cennik, poprawka:** dodatkowa rolka 650 zł zamiast 450 zł (była tańsza niż rolka w pakiecie Pro, więc pakiety przestawały się opłacać); usunięty nieprawdziwy opis.
 - **Cennik, poprawki:** znaczek „Najczęściej wybierany” zamiast „Polecany”; mniejsze karty pakietów; dodatki jako wyraźne kafelki z opisem i ceną w kolorze akcentu (m.in. wyjaśnione, czym jest format poziomy 16:9); sekcje Dodatki, Wycena indywidualna i FAQ wyraźniej od siebie oddzielone (nagłówki, odstępy, czerwony akcent w bloku wyceny).
