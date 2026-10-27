@@ -1,0 +1,334 @@
+---
+// Koszyk zapytań. Bez płatności: klient zbiera pakiet i dodatki, a na końcu wysyła zapytanie.
+// Stan trzymany tylko w przeglądarce klienta (localStorage, same identyfikatory, żadnych danych osobowych).
+// Wysyłka na razie przez program pocztowy klienta (mailto). Po wyborze usługi formularzy
+// podmienia się tylko funkcję send() na dole skryptu.
+import { site } from '../data/site.js';
+import { single, packages, addons } from '../data/pricing.js';
+
+const catalog = {
+  email: site.email,
+  plans: [single, ...packages].map((p) => ({ id: p.id, name: p.id === single.id ? p.name : `Pakiet ${p.name}`, price: p.price, reels: p.reels })),
+  addons: addons.map((a) => ({ id: a.id, name: a.name, amount: a.amount, unit: a.unit })),
+};
+// </ w JSON zamknąłby tag <script>, więc go maskujemy
+const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
+---
+<button type="button" class="cart-btn" data-cart-open aria-haspopup="dialog" aria-label="Koszyk, pusty">
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+    <path d="M3 4h2.2l2.1 10.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L21 8H6.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="9.5" cy="19.5" r="1.4" fill="currentColor"/><circle cx="17" cy="19.5" r="1.4" fill="currentColor"/>
+  </svg>
+  <span class="count" data-cart-count hidden>0</span>
+</button>
+
+<dialog class="cart" aria-labelledby="cart-title" data-cart>
+  <div class="panel">
+    <header class="top">
+      <h2 id="cart-title" class="display">Twoje zapytanie</h2>
+      <button type="button" class="close" data-cart-close aria-label="Zamknij koszyk">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </header>
+
+    <div class="body">
+      <p class="empty" data-cart-empty>Koszyk jest pusty. Wybierz pakiet albo dodatki w cenniku, a potem wyślij zapytanie. Nic tu nie płacisz.</p>
+      <ul class="items" data-cart-items></ul>
+      <div class="sum" data-cart-sum hidden>
+        <span>Szacunkowo</span>
+        <strong class="display" data-cart-total></strong>
+      </div>
+      <p class="hint" data-cart-hint hidden>To orientacyjna kwota, nie oferta. Ostateczną wycenę dostaniesz po krótkiej rozmowie.</p>
+
+      <form class="form" data-cart-form novalidate>
+        <h3 class="mono">Dane do kontaktu</h3>
+        <label>Imię i nazwisko<input name="name" autocomplete="name" required maxlength="80" /></label>
+        <label>E-mail<input name="email" type="email" autocomplete="email" required maxlength="120" /></label>
+        <label>Telefon <span class="opt">(opcjonalnie)</span><input name="phone" type="tel" autocomplete="tel" maxlength="30" /></label>
+        <label>Firma lub marka <span class="opt">(opcjonalnie)</span><input name="company" autocomplete="organization" maxlength="80" /></label>
+        <fieldset>
+          <legend>Jak chcesz porozmawiać?</legend>
+          <label class="radio"><input type="radio" name="contact" value="E-mail" checked />E-mail</label>
+          <label class="radio"><input type="radio" name="contact" value="Telefon" />Telefon</label>
+          <label class="radio"><input type="radio" name="contact" value="Konsultacja online (wideo)" />Konsultacja online</label>
+        </fieldset>
+        <label>Kiedy chcesz nagrywać? <span class="opt">(opcjonalnie)</span><input name="when" maxlength="80" placeholder="np. druga połowa listopada" /></label>
+        <label>Kilka słów o projekcie <span class="opt">(opcjonalnie)</span><textarea name="msg" rows="3" maxlength="1500"></textarea></label>
+        <label class="check"><input type="checkbox" name="rodo" required />
+          <span>Zgadzam się na użycie moich danych wyłącznie do odpowiedzi na to zapytanie. Administratorem danych jest Jan Sarzyński, kontakt: {site.email}.</span>
+        </label>
+        <p class="err" data-cart-err role="alert"></p>
+        <button type="submit" class="send mono">Wyślij zapytanie →</button>
+        <p class="hint">Otworzy się Twoja poczta z gotową wiadomością. Wystarczy kliknąć „Wyślij”.</p>
+      </form>
+    </div>
+  </div>
+</dialog>
+<p class="sr-live" aria-live="polite" data-cart-live></p>
+
+<script type="application/json" id="cart-catalog" set:html={json}></script>
+
+<script>
+  type Plan = { id: string; name: string; price: number; reels: number };
+  type Addon = { id: string; name: string; amount: number; unit: 'szt' | 'raz' | 'rolka' | 'procent' };
+  type State = { plan: string | null; addons: Record<string, number> };
+  const cat = JSON.parse(document.getElementById('cart-catalog')!.textContent!) as { email: string; plans: Plan[]; addons: Addon[] };
+  const KEY = 'sarzynsky-cart-v1';
+  const zl = (n: number) => `${Math.round(n).toLocaleString('pl-PL')} zł`;
+
+  // Stan: tylko identyfikatory z katalogu. Wszystko inne odrzucamy (ochrona przed zepsutym lub podrobionym localStorage).
+  const load = (): State => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
+      const plan = cat.plans.some((p) => p.id === raw?.plan) ? raw.plan : null;
+      const addons: Record<string, number> = {};
+      for (const a of cat.addons) {
+        const q = Math.floor(Number(raw?.addons?.[a.id]));
+        if (q > 0) addons[a.id] = a.unit === 'szt' ? Math.min(q, 20) : 1;
+      }
+      return { plan, addons };
+    } catch { return { plan: null, addons: {} }; }
+  };
+  let state = load();
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {} };
+
+  const dlg = document.querySelector<HTMLDialogElement>('[data-cart]')!;
+  const $ = <T extends Element>(s: string) => dlg.querySelector<T>(s)!;
+  const live = document.querySelector<HTMLElement>('[data-cart-live]')!;
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-cart-open]')!;
+  const countEl = document.querySelector<HTMLElement>('[data-cart-count]')!;
+
+  const lines = () => {
+    const plan = cat.plans.find((p) => p.id === state.plan);
+    const extra = state.addons.extra || 0;
+    const reels = (plan?.reels || 0) + extra;
+    const out: { id: string; label: string; detail: string; value: number; qty?: number; kind: 'plan' | 'addon' }[] = [];
+    if (plan) out.push({ id: plan.id, label: plan.name, detail: plan.reels > 1 ? `${plan.reels} rolek` : '1 rolka', value: plan.price, kind: 'plan' });
+    let base = plan?.price || 0;
+    for (const a of cat.addons) {
+      const q = state.addons[a.id];
+      if (!q || a.unit === 'procent') continue;
+      const value = a.unit === 'szt' ? a.amount * q : a.unit === 'rolka' ? a.amount * Math.max(reels, 1) : a.amount;
+      const detail = a.unit === 'szt' ? `${zl(a.amount)} za sztukę` : a.unit === 'rolka' ? `${zl(a.amount)} × ${Math.max(reels, 1)} rolek` : 'jednorazowo';
+      out.push({ id: a.id, label: a.name, detail, value, qty: a.unit === 'szt' ? q : undefined, kind: 'addon' });
+      base += value;
+    }
+    for (const a of cat.addons) {
+      if (a.unit === 'procent' && state.addons[a.id]) {
+        const value = base * a.amount / 100;
+        out.push({ id: a.id, label: a.name, detail: `+${a.amount}% od sumy`, value, kind: 'addon' });
+        base += value;
+      }
+    }
+    return { out, total: base };
+  };
+  const count = () => (state.plan ? 1 : 0) + Object.keys(state.addons).length;
+
+  const el = (tag: string, cls?: string, text?: string) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+
+  const render = () => {
+    const n = count();
+    countEl.textContent = String(n);
+    countEl.hidden = n === 0;
+    openBtn.setAttribute('aria-label', n ? `Koszyk, pozycji: ${n}` : 'Koszyk, pusty');
+    // przyciski „Dodaj” w cenniku pokazują, co już jest w koszyku
+    document.querySelectorAll<HTMLButtonElement>('[data-add]').forEach((b) => {
+      const id = b.dataset.add!;
+      const on = state.plan === id || !!state.addons[id];
+      b.setAttribute('aria-pressed', String(on));
+      const lbl = b.querySelector('[data-lbl]');
+      if (lbl) lbl.textContent = on ? (b.dataset.on || 'W koszyku ✓') : (b.dataset.off || 'Dodaj');
+    });
+
+    const { out, total } = lines();
+    const list = $<HTMLUListElement>('[data-cart-items]');
+    list.replaceChildren();
+    for (const l of out) {
+      const li = el('li');
+      const t = el('div', 'it');
+      t.append(el('strong', '', l.label), el('span', 'det', l.detail));
+      const right = el('div', 'r');
+      if (l.qty != null) {
+        const q = el('div', 'qty');
+        const minus = el('button', '', '−') as HTMLButtonElement;
+        minus.type = 'button'; minus.dataset.qty = `${l.id}:-1`; minus.setAttribute('aria-label', `Mniej: ${l.label}`);
+        const plus = el('button', '', '+') as HTMLButtonElement;
+        plus.type = 'button'; plus.dataset.qty = `${l.id}:1`; plus.setAttribute('aria-label', `Więcej: ${l.label}`);
+        q.append(minus, el('span', '', String(l.qty)), plus);
+        right.append(q);
+      }
+      right.append(el('span', 'val', zl(l.value)));
+      const rm = el('button', 'rm', 'Usuń') as HTMLButtonElement;
+      rm.type = 'button'; rm.dataset.remove = l.id; rm.setAttribute('aria-label', `Usuń: ${l.label}`);
+      right.append(rm);
+      li.append(t, right);
+      list.append(li);
+    }
+    $<HTMLElement>('[data-cart-empty]').hidden = out.length > 0;
+    $<HTMLElement>('[data-cart-sum]').hidden = out.length === 0;
+    $<HTMLElement>('[data-cart-hint]').hidden = out.length === 0;
+    $<HTMLElement>('[data-cart-total]').textContent = zl(total);
+  };
+
+  const announce = (t: string) => { live.textContent = ''; setTimeout(() => (live.textContent = t), 30); };
+  const bump = () => {
+    openBtn.classList.remove('bump'); void openBtn.offsetWidth; openBtn.classList.add('bump');
+  };
+
+  const toggle = (id: string) => {
+    const plan = cat.plans.find((p) => p.id === id);
+    const addon = cat.addons.find((a) => a.id === id);
+    if (plan) {
+      if (state.plan === id) { state.plan = null; announce(`Usunięto z koszyka: ${plan.name}`); }
+      else { state.plan = id; announce(`Dodano do koszyka: ${plan.name}. Pakiet może być jeden, poprzedni wybór został zastąpiony.`); bump(); }
+    } else if (addon) {
+      if (state.addons[id]) { delete state.addons[id]; announce(`Usunięto z koszyka: ${addon.name}`); }
+      else { state.addons[id] = 1; announce(`Dodano do koszyka: ${addon.name}`); bump(); }
+    }
+    save(); render();
+  };
+
+  document.addEventListener('click', (e) => {
+    const t = e.target as HTMLElement;
+    const add = t.closest<HTMLElement>('[data-add]');
+    if (add) return toggle(add.dataset.add!);
+    if (t.closest('[data-cart-open]')) { render(); dlg.showModal(); return; }
+    if (t.closest('[data-cart-close]')) return dlg.close();
+    const rm = t.closest<HTMLElement>('[data-remove]');
+    if (rm) {
+      const id = rm.dataset.remove!;
+      if (state.plan === id) state.plan = null; else delete state.addons[id];
+      save(); render();
+      (dlg.querySelector<HTMLElement>('[data-remove]') || $<HTMLElement>('[data-cart-close]')).focus();
+      return;
+    }
+    const q = t.closest<HTMLElement>('[data-qty]');
+    if (q) {
+      const [id, d] = q.dataset.qty!.split(':');
+      const next = (state.addons[id] || 0) + Number(d);
+      if (next <= 0) delete state.addons[id]; else state.addons[id] = Math.min(next, 20);
+      save(); render();
+      dlg.querySelector<HTMLElement>(`[data-qty="${id}:${d}"]`)?.focus();
+    }
+  });
+  // klik w tło (poza panelem) zamyka koszyk
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  // koszyk otwarty w innej karcie
+  addEventListener('storage', (e) => { if (e.key === KEY) { state = load(); render(); } });
+
+  const form = $<HTMLFormElement>('[data-cart-form]');
+  const err = $<HTMLElement>('[data-cart-err]');
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const f = new FormData(form);
+    const v = (k: string) => String(f.get(k) || '').trim().replace(/[\r\n]+/g, k === 'msg' ? '\n' : ' ');
+    const problems: string[] = [];
+    if (!v('name')) problems.push('podaj imię');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v('email'))) problems.push('podaj poprawny e-mail');
+    if (!f.get('rodo')) problems.push('zaznacz zgodę na użycie danych');
+    if (problems.length) {
+      err.textContent = `Uzupełnij: ${problems.join(', ')}.`;
+      (form.querySelector<HTMLElement>(':invalid') || form.querySelector<HTMLElement>('[name=name]'))!.focus();
+      return;
+    }
+    err.textContent = '';
+    send(f, v);
+  });
+
+  // Wysyłka. Dziś: program pocztowy klienta. Później: usługa formularzy lub Google (lead w Gmailu i Arkuszu).
+  function send(_f: FormData, v: (k: string) => string) {
+    const { out, total } = lines();
+    const items = out.length
+      ? out.map((l) => `• ${l.label}${l.qty ? ` × ${l.qty}` : ''}: ${zl(l.value)}`).join('\n') + `\nSzacunkowo: ${zl(total)}`
+      : '• bez wybranego pakietu (wycena indywidualna)';
+    const body = [
+      'Cześć, chciałbym zapytać o:', items, '',
+      `Imię i nazwisko: ${v('name')}`, `E-mail: ${v('email')}`,
+      v('phone') && `Telefon: ${v('phone')}`, v('company') && `Firma: ${v('company')}`,
+      `Preferowany kontakt: ${v('contact')}`, v('when') && `Termin: ${v('when')}`,
+      v('msg') && `\nO projekcie:\n${v('msg')}`,
+    ].filter(Boolean).join('\n');
+    const plan = cat.plans.find((p) => p.id === state.plan);
+    const subject = `Zapytanie ze strony: ${plan ? plan.name : 'wycena'}${v('contact').startsWith('Konsultacja') ? ' + konsultacja' : ''}`;
+    location.href = `mailto:${cat.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  render();
+</script>
+
+<style is:global>
+  /* globalne, bo pozycje koszyka są tworzone w JS; wszystko pod .cart / .cart-btn */
+  .cart-btn {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px; background: none; border: 0; color: #fff; cursor: pointer; transition: color .2s;
+  }
+  .cart-btn:hover { color: var(--accent); }
+  .cart-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .cart-btn .count {
+    position: absolute; top: 4px; right: 2px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+    background: var(--accent); color: #fff; font: 600 11px/18px var(--font-body); text-align: center;
+  }
+  .cart-btn.bump svg { animation: cart-bump .45s cubic-bezier(.2,.7,.2,1.4); }
+  @keyframes cart-bump { 0% { transform: scale(1); } 40% { transform: scale(1.25) rotate(-8deg); } 100% { transform: scale(1); } }
+
+  .cart {
+    margin: 0 0 0 auto; width: min(460px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh;
+    padding: 0; border: 0; border-left: 1px solid var(--line); background: #101010; color: var(--fg);
+  }
+  .cart::backdrop { background: rgba(0,0,0,.65); backdrop-filter: blur(2px); }
+  .cart[open] { animation: cart-slide .35s cubic-bezier(.2,.7,.2,1); }
+  @keyframes cart-slide { from { transform: translateX(40px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .cart .panel { display: flex; flex-direction: column; height: 100%; }
+  .cart .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+  .cart .top h2 { font-size: 28px; }
+  .cart .close { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: none; border: 0; color: #fff; cursor: pointer; }
+  .cart .body { flex: 1; overflow-y: auto; padding: 20px; overscroll-behavior: contain; }
+  .cart .empty { color: #b5b5b5; }
+  .cart .items { list-style: none; display: grid; gap: 10px; }
+  .cart .items li { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 14px; background: #161616; border: 1px solid var(--line); }
+  .cart .it { display: flex; flex-direction: column; gap: 2px; }
+  .cart .it strong { font-weight: 500; }
+  .cart .det { font-size: 13px; color: var(--muted); }
+  .cart .r { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .cart .val { color: #fff; white-space: nowrap; }
+  .cart .qty { display: inline-flex; align-items: center; gap: 4px; }
+  .cart .qty button, .cart .rm { min-width: 44px; min-height: 44px; background: none; border: 1px solid #3a3a3a; color: #fff; cursor: pointer; font-size: 16px; }
+  .cart .qty span { min-width: 22px; text-align: center; }
+  .cart .rm { border: 0; padding: 0 2px; font-size: 13px; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+  .cart .rm:hover { color: var(--accent); }
+  .cart .sum { display: flex; justify-content: space-between; align-items: baseline; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .cart .sum strong { font-size: 32px; color: var(--accent); }
+  .cart .hint { margin-top: 6px; font-size: 13px; line-height: 1.45; color: var(--muted); }
+
+  .cart .form { display: grid; gap: 14px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .cart .form h3 { color: #fff; }
+  .cart .form label { display: grid; gap: 6px; font-size: 14px; color: #dcdcdc; }
+  .cart .opt { color: var(--muted); }
+  .cart .form input:not([type=radio]):not([type=checkbox]), .cart .form textarea {
+    width: 100%; min-height: 46px; padding: 10px 12px; background: #0b0b0b; border: 1px solid #3a3a3a; color: #fff;
+    font: 16px/1.4 var(--font-body); /* 16 px: iOS nie przybliża pola */
+  }
+  .cart .form textarea { resize: vertical; }
+  .cart .form input:focus-visible, .cart .form textarea:focus-visible, .cart .radio input:focus-visible, .cart .check input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .cart fieldset { border: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  .cart legend { font-size: 14px; color: #dcdcdc; margin-bottom: 4px; }
+  .cart .radio, .cart .check { display: flex !important; grid-template-columns: none; align-items: center; gap: 10px !important; min-height: 44px; cursor: pointer; }
+  .cart .check { align-items: flex-start; font-size: 13px !important; line-height: 1.45; color: #b5b5b5 !important; }
+  .cart .radio input, .cart .check input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; }
+  .cart .check input { margin-top: 2px; }
+  .cart .err { color: #ff8a75; font-size: 14px; }
+  .cart .err:empty { display: none; }
+  .cart .send { min-height: 52px; background: var(--accent); color: #fff; border: 0; cursor: pointer; font-size: 13px; transition: background .2s, color .2s; }
+  .cart .send:hover { background: #fff; color: var(--bg); }
+  .cart .send:focus-visible, .cart .close:focus-visible, .cart .qty button:focus-visible, .cart .rm:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .sr-live { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cart[open], .cart-btn.bump svg { animation: none; }
+  }
+</style>

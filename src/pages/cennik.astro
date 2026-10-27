@@ -32,7 +32,8 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
         <ul class="list">
           {single.features.map((f) => <li>{f}</li>)}
         </ul>
-        <a class="btn ghost mono" href={mail('Pojedyncza rolka')}>Zamów rolkę</a>
+        <button type="button" class="btn ghost mono" data-add={single.id} data-off="Dodaj do koszyka" aria-pressed="false"><span data-lbl>Dodaj do koszyka</span></button>
+        <a class="btn ghost mono nojs" href={mail('Pojedyncza rolka')}>Zamów rolkę</a>
       </article>
 
       {plans.map((p, i) => (
@@ -49,7 +50,10 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
           <ul class="list">
             {p.features.map((f) => <li>{f}</li>)}
           </ul>
-          <a class:list={['btn', 'mono', { solid: p.featured, ghost: !p.featured }]} href={mail(`Pakiet ${p.name} (${rolki(p.reels)})`)}>
+          <button type="button" class:list={['btn', 'mono', { solid: p.featured, ghost: !p.featured }]} data-add={p.id} data-off={`Wybieram ${p.name} →`} aria-pressed="false">
+            <span data-lbl>Wybieram {p.name} →</span>
+          </button>
+          <a class:list={['btn', 'mono', 'nojs', { solid: p.featured, ghost: !p.featured }]} href={mail(`Pakiet ${p.name} (${rolki(p.reels)})`)}>
             Wybieram {p.name} →
           </a>
         </article>
@@ -57,6 +61,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
     </div>
 
     <p class="disclaimer">{disclaimer}</p>
+    <p class="howto">Wybierz pakiet i dodatki, a potem otwórz koszyk w prawym górnym rogu i wyślij zapytanie. Bez płatności i bez zobowiązań.</p>
 
     <section class="addons" aria-labelledby="dodatki">
       <p class="kicker mono">Opcjonalnie</p>
@@ -67,6 +72,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
             <span class="plus" aria-hidden="true"></span>
             <span class="txt"><strong>{a.name}</strong>{a.note && <span class="note">{a.note}</span>}</span>
             <span class="aprice display">{a.price}</span>
+            <button type="button" class="add mono" data-add={a.id} data-off="Dodaj" data-on="Dodane ✓" aria-pressed="false" aria-label={`${a.name}: dodaj do koszyka`}><span data-lbl>Dodaj</span></button>
           </li>
         ))}
       </ul>
@@ -125,9 +131,12 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
 <style>
   .page { padding-top: 16px; }
   .container { max-width: 1200px; margin: 0 auto; }
-  .head { text-align: center; }
+  /* tytuł strony po lewej, jak na pozostałych podstronach; sekcje niżej na środku */
   h1 { font-size: clamp(64px, 12vw, 170px); }
-  .lead { margin: 12px auto 0; max-width: 560px; color: #c9c9c9; font-size: 18px; }
+  .lead { margin: 12px 0 0; max-width: 560px; color: #c9c9c9; font-size: 18px; }
+  .howto { margin: 12px auto 0; max-width: 620px; text-align: center; color: #c9c9c9; font-size: 15px; }
+  :global(html:not(.js)) .howto, :global(html:not(.js)) [data-add], :global(.js) .nojs { display: none; }
+  .btn.btn[aria-pressed="true"] { background: #fff; color: var(--bg); border-color: #fff; }
   .disclaimer { margin: 28px auto 0; max-width: 720px; text-align: center; font-size: 13px; line-height: 1.5; color: var(--muted); }
 
   /* ---------- Karty ---------- */
@@ -166,7 +175,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
   }
   .anchor .list li::before { background-color: #3a3a3a; }
 
-  .btn { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: 0 20px; font-size: 13px; transition: background .2s, color .2s, border-color .2s, transform .2s; }
+  .btn { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: 0 20px; font-size: 13px; font-family: inherit; border: 1px solid transparent; cursor: pointer; transition: background .2s, color .2s, border-color .2s, transform .2s; }
   .btn.solid { background: var(--accent); color: #fff; }
   .btn.solid:hover { background: #fff; color: var(--bg); }
   .btn.ghost { border: 1px solid #5a5a5a; color: var(--fg); }
@@ -183,7 +192,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
   .addons ul { list-style: none; display: grid; gap: 12px; }
   @media (min-width: 700px) { .addons ul { grid-template-columns: repeat(2, 1fr); } }
   @media (min-width: 1100px) { .addons ul { grid-template-columns: repeat(4, 1fr); } }
-  .addons li { display: grid; grid-template-columns: auto 1fr; grid-template-areas: 'plus txt' 'plus price'; grid-template-rows: 1fr auto; gap: 6px 14px; padding: 20px; background: #121212; border: 1px solid var(--line); transition: border-color .25s, transform .25s; }
+  .addons li { display: grid; grid-template-columns: auto 1fr auto; grid-template-areas: 'plus txt txt' 'plus price add'; grid-template-rows: 1fr auto; gap: 6px 14px; padding: 20px; background: #121212; border: 1px solid var(--line); transition: border-color .25s, transform .25s; }
   .addons li:hover { border-color: var(--accent); transform: translateY(-3px); }
   /* plus rysowany z dwóch kresek: zawsze idealnie na środku kółka (znak tekstowy „+” siedzi na linii pisma i ucieka w dół) */
   .plus { grid-area: plus; position: relative; width: 34px; height: 34px; border-radius: 50%; background: rgba(232,69,44,.15); }
@@ -192,7 +201,11 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
   .txt { grid-area: txt; display: flex; flex-direction: column; gap: 4px; }
   .txt strong { font-weight: 500; color: #fff; }
   .note { font-size: 14px; color: #a8a8a8; line-height: 1.4; }
-  .aprice { grid-area: price; margin-top: 6px; font-size: 26px; color: var(--accent); }
+  .aprice { grid-area: price; align-self: center; margin-top: 6px; font-size: 26px; color: var(--accent); }
+  .add { grid-area: add; align-self: end; min-height: 44px; min-width: 44px; padding: 0 14px; background: none; border: 1px solid #5a5a5a; color: var(--fg); cursor: pointer; font-size: 12px; transition: background .2s, color .2s, border-color .2s; }
+  .add:hover { border-color: var(--accent); color: #fff; }
+  .add[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .add:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
   .custom { padding: 32px 24px; display: grid; gap: 20px; align-items: center; background: linear-gradient(120deg, #2a110c, #121212 60%); border: 1px solid rgba(232,69,44,.45); border-left: 4px solid var(--accent); }
   @media (min-width: 900px) { .custom { grid-template-columns: 1fr auto; padding: 40px; } }
@@ -223,7 +236,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
   @keyframes pop { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: scale(1); } }
 
   @media (prefers-reduced-motion: reduce) {
-    .plan, .btn, summary::after, .addons li { transition: none; }
+    .plan, .btn, summary::after, .addons li, .add { transition: none; }
     .anim .plan, .anim .list li { opacity: 1; translate: none; transition: none; }
     .anim.shown .featured, .anim.shown .save { animation: none; }
   }

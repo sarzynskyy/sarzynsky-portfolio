@@ -10,6 +10,8 @@
 // 4. Cena za sztukę i „taniej o X%”: klient widzi konkretną oszczędność.
 
 export const single = {
+  id: 'rolka',
+  reels: 1,
   name: 'Pojedyncza rolka',
   price: 990,
   per: 'za rolkę',
@@ -77,10 +79,11 @@ export const packages = [
 export const addons = [
   // Dodatkowa rolka musi być droższa niż rolka w najtańszym pakiecie (Pro: 599 zł),
   // inaczej „Start + dokupione rolki” wychodzi taniej niż większy pakiet.
-  { name: 'Dodatkowa rolka', note: 'dokładasz do dowolnego pakietu', price: '650 zł' },
-  { name: 'Ujęcia z drona', note: 'widok z góry na obiekt, trasę albo wydarzenie', price: '400 zł' },
-  { name: 'Wersja pozioma 16:9', note: 'ta sama rolka przekadrowana i zmontowana pod YouTube lub stronę www; zaplanowana przed zdjęciami, żeby kadr działał w obu formatach', price: '150 zł / rolka' },
-  { name: 'Ekspres 72 h', note: 'gotowe rolki w 3 dni od zdjęć', price: '+30%' },
+  // unit: 'szt' (można dodać kilka), 'raz' (raz na zamówienie), 'rolka' (razy liczba rolek), 'procent' (od sumy)
+  { id: 'extra', name: 'Dodatkowa rolka', note: 'dokładasz do dowolnego pakietu', price: '650 zł', amount: 650, unit: 'szt' },
+  { id: 'dron', name: 'Ujęcia z drona', note: 'widok z góry na obiekt, trasę albo wydarzenie', price: '400 zł', amount: 400, unit: 'raz' },
+  { id: 'poziom', name: 'Wersja pozioma 16:9', note: 'ta sama rolka przekadrowana i zmontowana pod YouTube lub stronę www; zaplanowana przed zdjęciami, żeby kadr działał w obu formatach', price: '150 zł / rolka', amount: 150, unit: 'rolka' },
+  { id: 'ekspres', name: 'Ekspres 72 h', note: 'gotowe rolki w 3 dni od zdjęć', price: '+30%', amount: 30, unit: 'procent' },
 ];
 
 export const custom = {

@@ -1,6 +1,7 @@
 ---
 // Stały pasek u góry każdej strony: logo + menu, zawsze na ciemnym, lekko rozmytym tle.
 import { site } from '../data/site.js';
+import Cart from './Cart.astro';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const path = Astro.url.pathname;
 const links = [
@@ -21,6 +22,7 @@ const isActive = (href) => href.startsWith('/') && path.startsWith(href);
             <a href={l.href} class:list={[{ active: isActive(l.href), cta: l.cta }]} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a>
           </li>
         ))}
+        <li class="cart-li"><Cart /></li>
       </ul>
     </nav>
   </div>
@@ -50,5 +52,9 @@ const isActive = (href) => href.startsWith('/') && path.startsWith(href);
     nav ul { gap: 0; }
     nav a { padding: 0 7px; font-size: 12px; letter-spacing: .02em; }
     nav a.cta { margin-left: 2px; }
+  }
+  @media (max-width: 360px) {
+    .logo { font-size: 18px; }
+    nav a { padding: 0 5px; font-size: 11px; letter-spacing: 0; }
   }
 </style>
