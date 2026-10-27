@@ -45,7 +45,7 @@ export const packages = [
     reels: 6,
     price: 3990,
     featured: true,
-    badge: 'Polecany',
+    badge: 'Najczęściej wybierany',
     tagline: 'Miesiąc regularnych publikacji',
     features: [
       '6 rolek do 60 s (9:16)',
@@ -75,10 +75,10 @@ export const packages = [
 ];
 
 export const addons = [
-  { name: 'Dodatkowa rolka', price: '450 zł' },
-  { name: 'Ujęcia z drona', price: '400 zł' },
-  { name: 'Wersja pozioma 16:9', price: '150 zł / rolka' },
-  { name: 'Ekspres 72 h', price: '+30%' },
+  { name: 'Dodatkowa rolka', note: 'do dowolnego pakietu, w tej samej cenie co w Pro', price: '450 zł' },
+  { name: 'Ujęcia z drona', note: 'widok z góry na obiekt, trasę albo wydarzenie', price: '400 zł' },
+  { name: 'Dodatkowy format poziomy 16:9', note: 'ta sama rolka w wersji na YouTube, stronę www lub ekran TV', price: '150 zł / rolka' },
+  { name: 'Ekspres 72 h', note: 'gotowe rolki w 3 dni od zdjęć', price: '+30%' },
 ];
 
 export const custom = {
