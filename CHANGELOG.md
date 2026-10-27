@@ -20,6 +20,7 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-27
+- **Droga do Ironmana na komputerze też pozioma:** ta sama prosta trasa co na telefonie, tylko większa, z kilometrami pod każdym etapem; opis etapu obok filmu. Ukośna mapa usunięta.
 - **Droga do Ironmana na telefonie:** zamiast małej ukośnej mapy prosta, pozioma trasa z 6 wyraźnymi punktami i podpisami; pod nią film wybranego etapu, nazwa, dystans i przyciski poprzedni/następny. Całość mieści się na jednym ekranie. Komputer bez zmian.
 - **Filmy YouTube osadzone na stałe:** zamiast miniatury z przyciskiem od razu widać player YouTube (tryb bez ciasteczek). Filmy niżej na stronie ładują się dopiero przy przewinięciu.
 - **Droga do Ironmana w krótszej formie:** ukośna trasa pod górę z 6 punktami (od pomiarów do mety) zamiast długiej listy; klik w etap pokazuje pod spodem jego film, dystans i przyciski poprzedni/następny. Animacje: trasa rysuje się po wejściu w widok, punkty pojawiają się po kolei, czerwony odcinek „dojeżdża” do wybranego etapu, pasek dystansu rośnie. Obsługa strzałkami z klawiatury; animacje wyłączone przy ograniczonym ruchu.

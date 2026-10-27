@@ -1,72 +1,44 @@
 ---
-// Droga do celu jako krótka trasa pod górę: etapy to punkty na „szosie”,
+// Droga do celu jako pozioma trasa (stepper): etapy w jednym rzędzie,
 // pod spodem jeden panel z filmem i dystansem wybranego etapu.
-// Animacje: trasa rysuje się po wejściu w widok, punkty pojawiają się po kolei,
-// czerwony odcinek jedzie do wybranego etapu. Wszystko wyłączone przy prefers-reduced-motion.
+// Animacje: punkty pojawiają się po kolei po wejściu w widok, czerwony pasek jedzie
+// do wybranego etapu, panel płynnie się zmienia, pasek dystansu rośnie.
+// Wszystko wyłączone przy prefers-reduced-motion.
 import YouTube from './YouTube.astro';
 const { journey, videos = [] } = Astro.props;
-const stages = journey.stages;
 const titleOf = (id) => videos.find((v) => v.id === id)?.title ?? '';
 const total = (s) => (s.swim ?? 0) + (s.bike ?? 0) + (s.run ?? 0);
-const max = Math.max(...stages.map(total));
+const nodes = journey.stages.map((s) => ({ ...s, km: total(s) }));
+const max = Math.max(...nodes.map((n) => n.km));
 const km = (n) => n.toLocaleString('pl-PL', { maximumFractionDigits: 2 });
-
-// Trasa: krzywa Béziera w układzie 1000 x 400 (z lewego dołu do prawej góry, lekko falująca)
-const P = [[40, 360], [380, 380], [600, 30], [960, 40]];
-const at = (t) => {
-  const u = 1 - t;
-  const k = [u * u * u, 3 * u * u * t, 3 * u * t * t, t * t * t];
-  return [0, 1].map((d) => k.reduce((s, kk, i) => s + kk * P[i][d], 0));
-};
-const path = `M${P[0]} C${P[1]} ${P[2]} ${P[3]}`;
-// długość łuku, żeby postęp na trasie zatrzymywał się dokładnie na punkcie
-const N = 400;
-const pts = Array.from({ length: N + 1 }, (_, i) => at(i / N));
-const cum = pts.map((p, i) => (i ? Math.hypot(p[0] - pts[i - 1][0], p[1] - pts[i - 1][1]) : 0));
-for (let i = 1; i < cum.length; i++) cum[i] += cum[i - 1];
-const L = cum[N];
-const nodes = stages.map((s, i) => {
-  const t = stages.length === 1 ? 1 : i / (stages.length - 1);
-  const [x, y] = at(t);
-  return { ...s, x: x / 10, y: y / 4, frac: cum[Math.round(t * N)] / L, km: total(s) };
-});
 const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
 ---
-<section class="journey" aria-labelledby={`${uid}-h`} data-journey>
+<section class="journey" aria-labelledby={`${uid}-h`} data-journey style="--p:0">
   <h2 id={`${uid}-h`} class="display">{journey.title}</h2>
   {journey.intro && <p class="intro">{journey.intro}</p>}
 
-  <div class="map">
-    <svg viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      <path class="asphalt" d={path} />
-      <path class="lane" d={path} />
-      <path class="progress" d={path} pathLength="1" style={`stroke-dashoffset:${1 - nodes[0].frac}`} />
-    </svg>
-    <div class="nodes" role="tablist" aria-label="Etapy">
-      {nodes.map((n, i) => (
-        <button
-          type="button"
-          role="tab"
-          id={`${uid}-tab-${i}`}
-          aria-controls={`${uid}-panel-${i}`}
-          aria-selected={i === 0 ? 'true' : 'false'}
-          tabindex={i === 0 ? 0 : -1}
-          class:list={['node', { finish: n.finish, flip: i === nodes.length - 1 }]}
-          style={`left:${n.x}%;top:${n.y}%;--i:${i};--frac:${n.frac}`}
-        >
-          <span class="dot" aria-hidden="true">{n.finish ? '★' : ''}</span>
-          <span class="tag">
-            <span class="lbl display">{n.label}</span>
-            {n.km > 0 && <span class="kmsmall mono">{km(n.km)} km</span>}
-          </span>
-        </button>
-      ))}
-    </div>
+  <div class="nodes" role="tablist" aria-label="Etapy">
+    {nodes.map((n, i) => (
+      <button
+        type="button"
+        role="tab"
+        id={`${uid}-tab-${i}`}
+        aria-controls={`${uid}-panel-${i}`}
+        aria-selected={i === 0 ? 'true' : 'false'}
+        tabindex={i === 0 ? 0 : -1}
+        class:list={['node', { finish: n.finish }]}
+        style={`--i:${i}`}
+      >
+        <span class="dot" aria-hidden="true">{n.finish ? '★' : ''}</span>
+        <span class="lbl display">{n.label}</span>
+        <span class="kmsmall mono">{n.km > 0 ? `${km(n.km)} km` : 'pomiary'}</span>
+      </button>
+    ))}
   </div>
 
   <div class="panels">
     {nodes.map((n, i) => (
-      <div class="panel" role="tabpanel" id={`${uid}-panel-${i}`} aria-labelledby={`${uid}-tab-${i}`} data-i={i}>
+      <div class="panel" role="tabpanel" id={`${uid}-panel-${i}`} aria-labelledby={`${uid}-tab-${i}`}>
         <div class="info">
           <p class="mono step">Etap {i + 1} z {nodes.length}</p>
           <p class="big display">{n.label}</p>
@@ -93,7 +65,6 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
   document.querySelectorAll<HTMLElement>('[data-journey]').forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
     const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
-    const progress = root.querySelector<SVGPathElement>('.progress')!;
     root.classList.add('js');
 
     const select = (i: number, focus = false) => {
@@ -104,8 +75,7 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
         t.classList.toggle('passed', k < i);
       });
       panels.forEach((p, k) => (p.hidden = k !== i));
-      progress.style.strokeDashoffset = String(1 - parseFloat(tabs[i].style.getPropertyValue('--frac')));
-      root.style.setProperty('--p', String(i / (tabs.length - 1)));
+      root.style.setProperty('--p', String(i / Math.max(1, tabs.length - 1)));
       if (focus) tabs[i].focus();
     };
 
@@ -113,7 +83,7 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
       t.addEventListener('click', () => select(i));
       t.addEventListener('keydown', (e) => {
         const last = tabs.length - 1;
-        const map: Record<string, number> = { ArrowRight: i + 1, ArrowUp: i + 1, ArrowLeft: i - 1, ArrowDown: i - 1, Home: 0, End: last };
+        const map: Record<string, number> = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: last };
         if (e.key in map) { e.preventDefault(); select(Math.max(0, Math.min(last, map[e.key])), true); }
       });
     });
@@ -122,120 +92,98 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
     );
     select(0);
 
-    // trasa „rysuje się”, gdy sekcja wjedzie w widok
-    const io = new IntersectionObserver((es) => es.forEach((e) => {
-      if (e.isIntersecting) { root.classList.add('drawn'); io.disconnect(); }
-    }), { threshold: 0.3 });
-    io.observe(root);
+    // punkty pojawiają się po kolei, gdy sekcja wjedzie w widok
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => es.forEach((e) => {
+        if (e.isIntersecting) { root.classList.add('drawn'); io.disconnect(); }
+      }), { threshold: 0.25 });
+      io.observe(root);
+    } else {
+      root.classList.add('drawn');
+    }
   });
 </script>
 
 <style>
   .journey { margin-top: 112px; }
   .journey h2 { font-size: clamp(40px, 7vw, 96px); }
-  .intro { margin: 12px 0 8px; max-width: 560px; color: #c9c9c9; }
+  .intro { margin: 12px 0 0; max-width: 560px; color: #c9c9c9; }
 
-  /* ---------- Mapa ---------- */
-  .map { position: relative; aspect-ratio: 1000 / 520; margin: 8px 0 24px; }
-  @media (min-width: 760px) { .map { aspect-ratio: 1000 / 250; } }
-  svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  svg path { fill: none; stroke-linecap: round; }
-  .asphalt, .lane { vector-effect: non-scaling-stroke; }
-  .asphalt { stroke: #242424; stroke-width: 22px; }
-  .lane { stroke: rgba(255,255,255,.5); stroke-width: 2px; stroke-dasharray: 10 12; }
-  /* postęp: bez non-scaling-stroke, żeby pathLength=1 liczył się zawsze tak samo */
-  .progress { stroke: var(--accent); stroke-width: 9; stroke-dasharray: 1; transition: stroke-dashoffset .7s cubic-bezier(.6,.1,.2,1); }
+  /* ---------- Trasa ---------- */
+  .nodes { --dot: 22px; --pad: 24px; position: relative; display: flex; justify-content: space-between; margin: 28px 0 24px; }
+  .nodes::before, .nodes::after {
+    content: ''; position: absolute; left: var(--pad); top: calc(13px + var(--dot) / 2 - 2px); height: 4px; border-radius: 2px;
+  }
+  .nodes::before { right: var(--pad); background: #3d3d3d; }
+  .nodes::after { width: calc((100% - 2 * var(--pad)) * var(--p)); background: var(--accent); transition: width .6s cubic-bezier(.6,.1,.2,1); }
 
   .node {
-    position: absolute; transform: translate(-50%, -50%);
-    width: 48px; height: 48px; padding: 0; border: 0; background: none; color: var(--fg); cursor: pointer;
+    position: relative; z-index: 1; width: 48px; display: flex; flex-direction: column; align-items: center;
+    padding: 0; border: 0; background: none; color: #fff; cursor: pointer;
   }
   .dot {
-    display: grid; place-items: center; width: 24px; height: 24px; margin: 12px; border-radius: 50%;
-    background: var(--bg); border: 3px solid var(--fg); font-size: 12px; line-height: 1;
+    display: grid; place-items: center; width: var(--dot); height: var(--dot); margin: 13px; border-radius: 50%;
+    background: var(--bg); border: 3px solid #fff; font-size: 11px; line-height: 1; color: #fff;
     transition: transform .25s, background .25s, border-color .25s;
   }
   .node.passed .dot { background: var(--accent); border-color: var(--accent); }
   .node[aria-selected='true'] .dot { background: var(--accent); border-color: #fff; transform: scale(1.3); box-shadow: 0 0 0 6px rgba(232,69,44,.25); }
-  .node.finish .dot { color: #fff; }
   .node:hover .dot { transform: scale(1.2); }
   .node:focus-visible { outline: none; }
   .node:focus-visible .dot { outline: 3px solid var(--accent); outline-offset: 4px; }
-
-  /* podpis pod punktem po prawej (trasa idzie w górę w prawo, więc tam jest miejsce) */
-  .tag { position: absolute; left: 34px; top: 34px; display: flex; flex-direction: column; align-items: flex-start; white-space: nowrap; pointer-events: none; }
-  .node.flip .tag { left: auto; right: 34px; top: auto; bottom: 30px; align-items: flex-end; }
-  .lbl { font-size: clamp(18px, 2.6vw, 34px); line-height: 1; transition: color .25s; }
-  .kmsmall { font-size: 10px; margin-top: 2px; }
+  .lbl { margin-top: -4px; font-size: 15px; line-height: 1.1; letter-spacing: .02em; white-space: nowrap; transition: color .25s; }
   .node[aria-selected='true'] .lbl { color: var(--accent); }
+  .kmsmall { display: none; margin-top: 4px; font-size: 11px; white-space: nowrap; }
 
   /* ---------- Panel wybranego etapu ---------- */
-  .panel { display: grid; gap: 20px; }
+  .panel { display: flex; flex-direction: column; gap: 14px; }
   .panel[hidden] { display: none; }
-  @media (min-width: 900px) { .panel { grid-template-columns: 1fr minmax(0, 520px); gap: 48px; align-items: start; } }
+  .film { order: -1; }
   .js .panel:not([hidden]) { animation: fade .45s ease both; }
-  .step { margin-bottom: 4px; }
-  .big { font-size: clamp(56px, 9vw, 120px); line-height: .85; }
-  h3 { margin-top: 8px; font-size: 20px; font-weight: 500; }
-  .dist { margin-top: 16px; max-width: 420px; }
+  .step, .big { display: none; }
+  h3 { font-size: 18px; font-weight: 500; }
+  .dist { margin-top: 10px; max-width: 420px; }
   .bar { height: 6px; background: #262626; border-radius: 3px; overflow: hidden; }
   .bar span { display: block; height: 100%; width: calc(var(--w) * 100%); background: var(--accent); border-radius: 3px; transform-origin: left; }
   .js .panel:not([hidden]) .bar span { animation: grow .8s .1s cubic-bezier(.2,.7,.2,1) both; }
   .kmline { margin-top: 10px; color: var(--fg); font-size: 14px; }
-  .split { margin-top: 4px; }
-  .nav { display: flex; gap: 8px; margin-top: 24px; }
-  .step-btn { font: inherit; letter-spacing: inherit; text-transform: inherit; min-height: 44px; padding: 10px 16px; color: var(--fg); background: none; border: 1px solid var(--line); cursor: pointer; transition: background .2s, color .2s; }
+  .split { margin-top: 4px; font-size: 11px; }
+  .nav { display: flex; gap: 8px; margin-top: 12px; }
+  .step-btn { flex: 1; font: inherit; letter-spacing: inherit; text-transform: inherit; min-height: 44px; padding: 10px 16px; color: var(--fg); background: none; border: 1px solid var(--line); cursor: pointer; transition: background .2s, color .2s; }
   .step-btn:hover { background: var(--fg); color: var(--bg); }
   .step-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
+  /* ---------- Komputer: większa trasa z kilometrami, opis obok filmu ---------- */
+  @media (min-width: 760px) {
+    .nodes { --dot: 28px; --pad: 50px; margin: 40px 0 36px; }
+    .node { width: 100px; }
+    .lbl { font-size: clamp(22px, 2.6vw, 34px); }
+    .kmsmall { display: block; }
+    .panel { display: grid; grid-template-columns: 1fr minmax(0, 560px); gap: 48px; align-items: start; }
+    .film { order: 2; }
+    .step, .big { display: block; }
+    .step { margin-bottom: 4px; }
+    .big { font-size: clamp(56px, 7vw, 104px); line-height: .85; }
+    h3 { margin-top: 8px; font-size: 20px; }
+    .dist { margin-top: 16px; }
+    .split { font-size: 12px; }
+    .nav { margin-top: 24px; }
+    .step-btn { flex: 0 1 auto; }
+  }
+
   /* ---------- Animacje wejścia ---------- */
-  .js svg { clip-path: inset(0 100% 0 0); transition: clip-path 1.3s cubic-bezier(.6,.1,.2,1); }
-  .js .lane { opacity: 0; transition: opacity .6s 1s; }
-  .js .progress { opacity: 0; transition: stroke-dashoffset .7s cubic-bezier(.6,.1,.2,1), opacity .4s 1.2s; }
-  .js .node { opacity: 0; transform: translate(-50%, -50%) scale(.6); transition: opacity .35s, transform .35s; transition-delay: calc(.35s + var(--i) * .12s); }
-  .js.drawn svg { clip-path: inset(0 0 0 0); }
-  .js.drawn .lane, .js.drawn .progress { opacity: 1; }
-  .js.drawn .node { opacity: 1; transform: translate(-50%, -50%); }
+  .js .node { opacity: 0; transform: translateY(10px) scale(.8); transition: opacity .35s, transform .35s; transition-delay: calc(.1s + var(--i) * .1s); }
+  .js.drawn .node { opacity: 1; transform: none; }
+  .js .nodes::before { transform-origin: left; transform: scaleX(0); transition: transform .9s cubic-bezier(.6,.1,.2,1); }
+  .js.drawn .nodes::before { transform: scaleX(1); }
 
   @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
   @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
   @media (prefers-reduced-motion: reduce) {
-    .js svg, .js .lane, .js .progress, .js .node, .dot { transition: none !important; }
-    .js svg { clip-path: none; }
-    .js .lane, .js .progress, .js .node { opacity: 1; transform: translate(-50%, -50%); }
+    .js .node, .js .nodes::before, .nodes::after, .dot, .lbl { transition: none !important; }
+    .js .node { opacity: 1; transform: none; }
+    .js .nodes::before { transform: none; }
     .js .panel:not([hidden]), .js .panel:not([hidden]) .bar span { animation: none; }
-  }
-
-  /* ---------- Telefon: prosta, pozioma trasa (stepper) + film nad opisem ---------- */
-  @media (max-width: 759px) {
-    .journey { margin-top: 72px; }
-    .intro { font-size: 15px; }
-    .map { aspect-ratio: auto; margin: 20px 0 16px; }
-    .map svg { display: none; }
-    .nodes { position: relative; display: flex; justify-content: space-between; }
-    .nodes::before, .nodes::after { content: ''; position: absolute; left: 24px; top: 22px; height: 4px; border-radius: 2px; }
-    .nodes::before { right: 24px; background: #3d3d3d; }
-    .nodes::after { width: calc((100% - 48px) * var(--p, 0)); background: var(--accent); transition: width .6s cubic-bezier(.6,.1,.2,1); }
-    .node { position: relative; left: auto !important; top: auto !important; transform: none; width: 48px; height: auto; display: flex; flex-direction: column; align-items: center; z-index: 1; }
-    .dot { width: 22px; height: 22px; margin: 13px; border-width: 3px; }
-    .tag, .node.flip .tag { position: static; align-items: center; margin-top: -4px; }
-    .lbl { font-size: 15px; letter-spacing: .02em; color: #fff; }
-    .kmsmall { display: none; }
-    .js .node { transform: scale(.6); }
-    .js.drawn .node { transform: none; }
-    .panel { display: flex; flex-direction: column; gap: 14px; }
-    .panel[hidden] { display: none; }
-    .film { order: -1; }
-    .step, .big { display: none; }
-    h3 { margin-top: 0; font-size: 18px; }
-    .dist { margin-top: 10px; }
-    .split { font-size: 11px; }
-    .nav { margin-top: 12px; }
-    .nav .step-btn { flex: 1; }
-  }
-  @media (max-width: 759px) and (prefers-reduced-motion: reduce) {
-    .js .node { transform: none; }
-    .nodes::after { transition: none; }
   }
 </style>
