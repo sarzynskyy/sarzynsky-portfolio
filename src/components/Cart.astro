@@ -8,6 +8,7 @@ import { single, packages, addons } from '../data/pricing.js';
 
 const catalog = {
   email: site.email,
+  endpoint: site.leadEndpoint || '',
   plans: [single, ...packages].map((p) => ({ id: p.id, name: p.id === single.id ? p.name : `Pakiet ${p.name}`, price: p.price, reels: p.reels })),
   addons: addons.map((a) => ({ id: a.id, name: a.name, amount: a.amount, unit: a.unit })),
 };
@@ -47,6 +48,7 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
 
       <form class="form" data-cart-form novalidate>
         <h3 class="mono">Dane do kontaktu</h3>
+        <div class="hp" aria-hidden="true"><label>Strona www<input name="website" tabindex="-1" autocomplete="off" /></label></div>
         <label>Imię i nazwisko<input name="name" autocomplete="name" required maxlength="80" /></label>
         <label>E-mail<input name="email" type="email" autocomplete="email" required maxlength="120" /></label>
         <label>Telefon <span class="opt">(opcjonalnie)</span><input name="phone" type="tel" autocomplete="tel" maxlength="30" /></label>
@@ -64,8 +66,12 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
         </label>
         <p class="err" data-cart-err role="alert"></p>
         <button type="submit" class="send mono">Wyślij zapytanie →</button>
-        <p class="hint">Otworzy się Twoja poczta z gotową wiadomością. Wystarczy kliknąć „Wyślij”.</p>
+        <p class="hint" data-cart-sendhint>{site.leadEndpoint ? 'Zapytanie trafi prosto do mnie. Odpowiem zwykle w ciągu 24 godzin.' : 'Otworzy się Twoja poczta z gotową wiadomością. Wystarczy kliknąć „Wyślij”.'}</p>
       </form>
+      <div class="done" data-cart-done hidden tabindex="-1">
+        <p class="display">Dzięki!</p>
+        <p>Zapytanie dotarło. Odezwę się zwykle w ciągu 24 godzin na podany e-mail lub telefon.</p>
+      </div>
     </div>
   </div>
 </dialog>
@@ -77,7 +83,7 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
   type Plan = { id: string; name: string; price: number; reels: number };
   type Addon = { id: string; name: string; amount: number; unit: 'szt' | 'raz' | 'rolka' | 'procent' };
   type State = { plan: string | null; addons: Record<string, number> };
-  const cat = JSON.parse(document.getElementById('cart-catalog')!.textContent!) as { email: string; plans: Plan[]; addons: Addon[] };
+  const cat = JSON.parse(document.getElementById('cart-catalog')!.textContent!) as { email: string; endpoint: string; plans: Plan[]; addons: Addon[] };
   const KEY = 'sarzynsky-cart-v1';
   const zl = (n: number) => `${Math.round(n).toLocaleString('pl-PL')} zł`;
 
@@ -245,22 +251,65 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
     send(f, v);
   });
 
-  // Wysyłka. Dziś: program pocztowy klienta. Później: usługa formularzy lub Google (lead w Gmailu i Arkuszu).
-  function send(_f: FormData, v: (k: string) => string) {
+  const summary = (v: (k: string) => string) => {
     const { out, total } = lines();
     const items = out.length
-      ? out.map((l) => `• ${l.label}${l.qty ? ` × ${l.qty}` : ''}: ${zl(l.value)}`).join('\n') + `\nSzacunkowo: ${zl(total)}`
+      ? out.map((l) => `• ${l.label}${l.qty ? ` × ${l.qty}` : ''}: ${zl(l.value)}`).join('\n')
       : '• bez wybranego pakietu (wycena indywidualna)';
+    const plan = cat.plans.find((p) => p.id === state.plan);
+    const subject = `Zapytanie ze strony: ${plan ? plan.name : 'wycena'}${v('contact').startsWith('Konsultacja') ? ' + konsultacja' : ''}`;
+    return { items, total: out.length ? zl(total) : '', subject };
+  };
+
+  const mailto = (v: (k: string) => string) => {
+    const { items, total, subject } = summary(v);
     const body = [
-      'Cześć, chciałbym zapytać o:', items, '',
+      'Cześć, chciałbym zapytać o:', items, total && `Szacunkowo: ${total}`, '',
       `Imię i nazwisko: ${v('name')}`, `E-mail: ${v('email')}`,
       v('phone') && `Telefon: ${v('phone')}`, v('company') && `Firma: ${v('company')}`,
       `Preferowany kontakt: ${v('contact')}`, v('when') && `Termin: ${v('when')}`,
       v('msg') && `\nO projekcie:\n${v('msg')}`,
     ].filter(Boolean).join('\n');
-    const plan = cat.plans.find((p) => p.id === state.plan);
-    const subject = `Zapytanie ze strony: ${plan ? plan.name : 'wycena'}${v('contact').startsWith('Konsultacja') ? ' + konsultacja' : ''}`;
-    location.href = `mailto:${cat.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    return `mailto:${cat.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  // czas od otwarcia koszyka: boty wysyłają formularz w ułamku sekundy
+  let openedAt = Date.now();
+  openBtn.addEventListener('click', () => {
+    openedAt = Date.now();
+    if (form.hidden) { form.hidden = false; $<HTMLElement>('[data-cart-done]').hidden = true; form.reset(); }
+  });
+
+  // Wysyłka: do skryptu Google (Gmail, Arkusz, Kalendarz), a gdy go nie ma albo zawiedzie, przez pocztę klienta.
+  async function send(f: FormData, v: (k: string) => string) {
+    if (!cat.endpoint) { location.href = mailto(v); return; }
+    const btn = form.querySelector<HTMLButtonElement>('.send')!;
+    btn.disabled = true; btn.textContent = 'Wysyłam…';
+    const { items, total } = summary(v);
+    const payload = {
+      name: v('name'), email: v('email'), phone: v('phone'), company: v('company'), contact: v('contact'),
+      when: v('when'), msg: v('msg'), items, total, consent: true,
+      website: String(f.get('website') || ''), elapsed: Date.now() - openedAt,
+    };
+    try {
+      // text/plain: bez zapytania wstępnego CORS, które Apps Script odrzuca
+      const r = await fetch(cat.endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+      const res = await r.json();
+      if (!res.ok) throw new Error(res.error || 'error');
+      form.hidden = true;
+      const done = $<HTMLElement>('[data-cart-done]');
+      done.hidden = false; done.focus();
+      state = { plan: null, addons: {} }; save(); render();
+    } catch (e) {
+      const msg = (e as Error).message;
+      err.replaceChildren(
+        document.createTextNode(msg === 'too_fast' ? 'Chwilę za szybko. Spróbuj ponownie za kilka sekund albo ' : 'Nie udało się wysłać. Spróbuj jeszcze raz albo '),
+        Object.assign(document.createElement('a'), { href: mailto(v), textContent: 'wyślij przez swoją pocztę' }),
+        document.createTextNode('.'),
+      );
+    } finally {
+      btn.disabled = false; btn.textContent = 'Wyślij zapytanie →';
+    }
   }
 
   render();
@@ -315,6 +364,12 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
   .cart .book { display: inline-flex; align-items: center; min-height: 44px; margin-top: 10px; padding: 0 16px; border: 1px solid #fff; color: #fff; font-size: 12px; transition: background .2s, color .2s; }
   .cart .book:hover { background: #fff; color: var(--bg); }
   .cart .book:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .cart .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .cart .done { margin-top: 28px; padding: 24px; border: 1px solid var(--accent); background: #171210; }
+  .cart .done .display { font-size: 40px; color: var(--accent); }
+  .cart .done p + p { margin-top: 8px; color: #dcdcdc; }
+  .cart .err a { color: #fff; text-decoration: underline; }
+  .cart .send:disabled { opacity: .6; cursor: wait; }
   .cart .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .cart .form { display: grid; gap: 14px; margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--line); }
   .cart .form h3 { color: #fff; }

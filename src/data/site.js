@@ -4,6 +4,9 @@ export const site = {
   email: 'j.sarzynsky@gmail.com',
   instagram: 'https://instagram.com/sarzynsky',
   location: 'Kraków, PL',
+  // Adres /exec skryptu Google Apps Script (integrations/google-apps-script/Leady.gs).
+  // Pusty = zapytanie z koszyka otwiera program pocztowy klienta.
+  leadEndpoint: '',
   // Strona rezerwacji konsultacji (Harmonogram spotkań w Kalendarzu Google)
   booking: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ36fVF85137wszzstHfb1g9u1awamOFZu9YCCH58sDM9-mt55-KAHXsLvEy7wWek0eUxNqN6SjF',
   // Plik showreela wrzuć do public/video/showreel.mp4 (krótki, wyciszony, < 10 MB)
