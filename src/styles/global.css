@@ -27,8 +27,9 @@ body::after {
 @keyframes grain { 0%{transform:translate(0,0)} 33%{transform:translate(-3%,2%)} 66%{transform:translate(2%,-3%)} 100%{transform:translate(0,0)} }
 @media (prefers-reduced-motion: reduce) { body::after { animation: none; } }
 
-/* line-height 1.15: przecinek z linii wyżej i kreska nad Ó/Ś/Ć w linii niżej mają miejsce; polskie znaki nad wielkimi literami (Ó, Ś, Ć) nie wchodzą na linię wyżej */
-.display { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .01em; line-height: 1.15; }
+/* line-height 1.3: w kroju Anton kreska nad Ó sięga 1,11 em nad linię pisma, a przecinek i ogonek Ę 0,13 do 0,21 em pod nią,
+   więc przy niższej interlinii znaki z sąsiednich linii nachodzą na siebie (zmierzone). */
+.display { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .01em; line-height: 1.3; }
 .mono { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .wrap { padding: 0 var(--pad); }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
