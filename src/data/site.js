@@ -1,6 +1,6 @@
 export const site = {
   name: 'SARZYNSKY',
-  tagline: 'Video & photo. Ruch, światło, ludzie.',
+  tagline: 'Kręcę i montuję filmy na YouTube Maćka Dudy. Dla marek robię rolki i zdjęcia.',
   email: 'j.sarzynsky@gmail.com',
   instagram: 'https://instagram.com/sarzynsky',
   location: 'Kraków, PL',
@@ -9,7 +9,4 @@ export const site = {
   leadEndpoint: 'https://script.google.com/macros/s/AKfycbxAb2_MQ1_YWvo_rU6fFPLsoB-F6_wxqkKOxYjpIRD-UMkhz_hgq0ZFfNALo2wNQjJ4xw/exec',
   // Strona rezerwacji konsultacji (Harmonogram spotkań w Kalendarzu Google)
   booking: 'https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ36fVF85137wszzstHfb1g9u1awamOFZu9YCCH58sDM9-mt55-KAHXsLvEy7wWek0eUxNqN6SjF',
-  // Plik showreela wrzuć do public/video/showreel.mp4 (krótki, wyciszony, < 10 MB)
-  showreel: '/video/showreel.mp4',
-  showreelPoster: '/photos/placeholder/reel.jpg',
 };

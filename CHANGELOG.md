@@ -20,6 +20,8 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-27
+- **Strona główna, tło:** zamiast pustego odtwarzacza (showreel nie istniał, na telefonie było czarne tło) zapętlone 14 s ujęć z moich realizacji motoryzacyjnych, spowolnione i przyciemnione, z delikatnym, powolnym przybliżeniem. Na telefonie osobna wersja pionowa, na komputerze pozioma (każda ok. 1 MB). Film gra tylko wtedy, gdy jest na ekranie; przy ograniczonym ruchu albo oszczędzaniu danych zostaje sama klatka. Kadry bez tablic rejestracyjnych.
+- **Strona główna, opis:** „Kręcę i montuję filmy na YouTube Maćka Dudy. Dla marek robię rolki i zdjęcia.” zamiast „Video & photo. Ruch, światło, ludzie.”; nad tytułem „Kraków · wideo i zdjęcia” zamiast „Showreel 2026”.
 - **Jeden formularz kontaktu na całej stronie:** „Kontakt” w menu, „Napisz do mnie” w stopce, „Wyceń projekt” na stronie głównej, „Poproś o wycenę” w cenniku, „Chcesz coś podobnego?” w projektach i przycisk w O mnie otwierają ten sam panel zapytania (wysyłka do Gmaila, Arkusza i Kalendarza) z podpisanym tematem, np. „Wycena indywidualna” albo „Coś podobnego do: Ironman Tallinn”. Bez JavaScriptu linki nadal otwierają pocztę. Adres e-mail w stopce zostaje zwykłym linkiem.
 - **Cennik:** tytuł i opis wyrównane do lewej krawędzi strony, dokładnie jak w Pracach (wcześniej siedziały w wyśrodkowanej kolumnie).
 - **Zapytania z koszyka włączone:** wysyłka do skryptu Google (Gmail z etykietą „Leady”, Arkusz „Leady ze strony”, przypomnienie w Kalendarzu) zamiast programu pocztowego klienta.
