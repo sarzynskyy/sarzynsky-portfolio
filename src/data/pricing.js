@@ -75,7 +75,9 @@ export const packages = [
 ];
 
 export const addons = [
-  { name: 'Dodatkowa rolka', note: 'do dowolnego pakietu, w tej samej cenie co w Pro', price: '450 zł' },
+  // Dodatkowa rolka musi być droższa niż rolka w najtańszym pakiecie (Pro: 599 zł),
+  // inaczej „Start + dokupione rolki” wychodzi taniej niż większy pakiet.
+  { name: 'Dodatkowa rolka', note: 'dokładasz do dowolnego pakietu', price: '650 zł' },
   { name: 'Ujęcia z drona', note: 'widok z góry na obiekt, trasę albo wydarzenie', price: '400 zł' },
   { name: 'Dodatkowy format poziomy 16:9', note: 'ta sama rolka w wersji na YouTube, stronę www lub ekran TV', price: '150 zł / rolka' },
   { name: 'Ekspres 72 h', note: 'gotowe rolki w 3 dni od zdjęć', price: '+30%' },
