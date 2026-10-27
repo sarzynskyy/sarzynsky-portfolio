@@ -40,7 +40,7 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
     <svg viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
       <path class="asphalt" d={path} />
       <path class="lane" d={path} />
-      <path class="progress" d={path} pathLength="1" style={`--to:${nodes[0].frac}`} />
+      <path class="progress" d={path} pathLength="1" style={`stroke-dashoffset:${1 - nodes[0].frac}`} />
     </svg>
     <div class="nodes" role="tablist" aria-label="Etapy">
       {nodes.map((n, i) => (
@@ -104,7 +104,7 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
         t.classList.toggle('passed', k < i);
       });
       panels.forEach((p, k) => (p.hidden = k !== i));
-      progress.style.setProperty('--to', tabs[i].style.getPropertyValue('--frac'));
+      progress.style.strokeDashoffset = String(1 - parseFloat(tabs[i].style.getPropertyValue('--frac')));
       if (focus) tabs[i].focus();
     };
 
@@ -136,14 +136,14 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
 
   /* ---------- Mapa ---------- */
   .map { position: relative; aspect-ratio: 1000 / 520; margin: 8px 0 24px; }
-  @media (min-width: 760px) { .map { aspect-ratio: 1000 / 340; } }
+  @media (min-width: 760px) { .map { aspect-ratio: 1000 / 250; } }
   svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
   svg path { fill: none; stroke-linecap: round; }
   .asphalt, .lane { vector-effect: non-scaling-stroke; }
   .asphalt { stroke: #242424; stroke-width: 22px; }
   .lane { stroke: rgba(255,255,255,.5); stroke-width: 2px; stroke-dasharray: 10 12; }
   /* postęp: bez non-scaling-stroke, żeby pathLength=1 liczył się zawsze tak samo */
-  .progress { stroke: var(--accent); stroke-width: 9; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--to)); transition: stroke-dashoffset .7s cubic-bezier(.6,.1,.2,1); }
+  .progress { stroke: var(--accent); stroke-width: 9; stroke-dasharray: 1; transition: stroke-dashoffset .7s cubic-bezier(.6,.1,.2,1); }
 
   .node {
     position: absolute; transform: translate(-50%, -50%);
@@ -172,7 +172,7 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
   /* ---------- Panel wybranego etapu ---------- */
   .panel { display: grid; gap: 20px; }
   .panel[hidden] { display: none; }
-  @media (min-width: 900px) { .panel { grid-template-columns: 1fr 1.35fr; gap: 48px; align-items: start; } }
+  @media (min-width: 900px) { .panel { grid-template-columns: 1fr minmax(0, 520px); gap: 48px; align-items: start; } }
   .js .panel:not([hidden]) { animation: fade .45s ease both; }
   .step { margin-bottom: 4px; }
   .big { font-size: clamp(56px, 9vw, 120px); line-height: .85; }
