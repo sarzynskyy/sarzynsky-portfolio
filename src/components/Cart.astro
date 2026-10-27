@@ -33,7 +33,8 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
     </header>
 
     <div class="body">
-      <p class="empty" data-cart-empty>Koszyk jest pusty. Wybierz pakiet albo dodatki w cenniku, a potem wyślij zapytanie. Nic tu nie płacisz.</p>
+      <p class="topic" data-cart-topic hidden></p>
+      <p class="empty" data-cart-empty>Nie wybrałeś pakietu? Nic nie szkodzi. Opisz projekt poniżej, a wycenę przygotuję indywidualnie. Gotowe pakiety znajdziesz w <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/cennik`}>cenniku</a>. Nic tu nie płacisz.</p>
       <ul class="items" data-cart-items></ul>
       <div class="sum" data-cart-sum hidden>
         <span>Szacunkowo</span>
@@ -106,7 +107,7 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
   const dlg = document.querySelector<HTMLDialogElement>('[data-cart]')!;
   const $ = <T extends Element>(s: string) => dlg.querySelector<T>(s)!;
   const live = document.querySelector<HTMLElement>('[data-cart-live]')!;
-  const openBtn = document.querySelector<HTMLButtonElement>('[data-cart-open]')!;
+  const openBtn = document.querySelector<HTMLButtonElement>('.cart-btn')!;
   const countEl = document.querySelector<HTMLElement>('[data-cart-count]')!;
 
   const lines = () => {
@@ -208,7 +209,8 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
     const t = e.target as HTMLElement;
     const add = t.closest<HTMLElement>('[data-add]');
     if (add) return toggle(add.dataset.add!);
-    if (t.closest('[data-cart-open]')) { render(); dlg.showModal(); return; }
+    const opener = t.closest<HTMLElement>('[data-cart-open]');
+    if (opener) { e.preventDefault(); openPanel(opener.dataset.topic || ''); return; }
     if (t.closest('[data-cart-close]')) return dlg.close();
     const rm = t.closest<HTMLElement>('[data-remove]');
     if (rm) {
@@ -253,12 +255,14 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
 
   const summary = (v: (k: string) => string) => {
     const { out, total } = lines();
+    const extra = topic ? `\n• Temat: ${topic}` : '';
     const items = out.length
       ? out.map((l) => `• ${l.label}${l.qty ? ` × ${l.qty}` : ''}: ${zl(l.value)}`).join('\n')
       : '• bez wybranego pakietu (wycena indywidualna)';
+    const itemsAll = items + extra;
     const plan = cat.plans.find((p) => p.id === state.plan);
-    const subject = `Zapytanie ze strony: ${plan ? plan.name : 'wycena'}${v('contact').startsWith('Konsultacja') ? ' + konsultacja' : ''}`;
-    return { items, total: out.length ? zl(total) : '', subject };
+    const subject = `Zapytanie ze strony: ${plan ? plan.name : topic || 'wycena'}${v('contact').startsWith('Konsultacja') ? ' + konsultacja' : ''}`;
+    return { items: itemsAll, total: out.length ? zl(total) : '', subject };
   };
 
   const mailto = (v: (k: string) => string) => {
@@ -275,10 +279,20 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
 
   // czas od otwarcia koszyka: boty wysyłają formularz w ułamku sekundy
   let openedAt = Date.now();
-  openBtn.addEventListener('click', () => {
+  // Temat zapytania z przycisku, który otworzył panel (np. „Wycena indywidualna”, „Projekt: Ironman”)
+  let topic = '';
+  function openPanel(t: string) {
     openedAt = Date.now();
+    topic = t.slice(0, 120);
     if (form.hidden) { form.hidden = false; $<HTMLElement>('[data-cart-done]').hidden = true; form.reset(); }
-  });
+    const tp = $<HTMLElement>('[data-cart-topic]');
+    tp.textContent = topic ? `Temat: ${topic}` : '';
+    tp.hidden = !topic;
+    render();
+    // „Kontakt” to zwykła wiadomość, bez podpowiedzi o pakietach
+    if (topic === 'Kontakt') $<HTMLElement>('[data-cart-empty]').hidden = true;
+    dlg.showModal();
+  }
 
   // Wysyłka: do skryptu Google (Gmail, Arkusz, Kalendarz), a gdy go nie ma albo zawiedzie, przez pocztę klienta.
   async function send(f: FormData, v: (k: string) => string) {
@@ -343,6 +357,8 @@ const json = JSON.stringify(catalog).replace(/</g, '\\u003c');
   .cart .close { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: none; border: 0; color: #fff; cursor: pointer; }
   .cart .body { flex: 1; overflow-y: auto; padding: 20px; overscroll-behavior: contain; }
   .cart .empty { color: #b5b5b5; }
+  .cart .empty a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+  .cart .topic { margin-bottom: 14px; padding: 10px 12px; background: rgba(232,69,44,.12); border: 1px solid rgba(232,69,44,.45); color: #fff; font-size: 14px; }
   .cart .items { list-style: none; display: grid; gap: 10px; }
   .cart .items li { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 12px 14px; background: #161616; border: 1px solid var(--line); }
   .cart .it { display: flex; flex-direction: column; gap: 2px; }

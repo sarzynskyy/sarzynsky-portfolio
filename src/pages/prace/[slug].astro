@@ -79,7 +79,7 @@ const moreVideos = rest.filter((v) => !onRoad.has(v.id));
 
     <section class="cta" aria-labelledby="cta">
       <h2 id="cta" class="display">Chcesz coś podobnego?</h2>
-      <a class="btn mono" href={`mailto:${site.email}?subject=${encodeURIComponent('Projekt: ' + p.title)}`}>Napisz do mnie →</a>
+      <a class="btn mono" href={`mailto:${site.email}?subject=${encodeURIComponent('Projekt: ' + p.title)}`} data-cart-open data-topic={`Coś podobnego do: ${p.title}`}>Napisz do mnie →</a>
     </section>
 
     <a href={`${base}/prace/${next.slug}`} class="next">

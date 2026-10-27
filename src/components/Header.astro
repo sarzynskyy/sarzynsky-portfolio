@@ -19,7 +19,7 @@ const isActive = (href) => href.startsWith('/') && path.startsWith(href);
       <ul id="menu">
         {links.map((l) => (
           <li>
-            <a href={l.href} class:list={[{ active: isActive(l.href), cta: l.cta }]} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a>
+            <a href={l.href} data-cart-open={l.cta ? '' : undefined} data-topic={l.cta ? 'Kontakt' : undefined} class:list={[{ active: isActive(l.href), cta: l.cta }]} aria-current={isActive(l.href) ? 'page' : undefined}>{l.label}</a>
           </li>
         ))}
       </ul>

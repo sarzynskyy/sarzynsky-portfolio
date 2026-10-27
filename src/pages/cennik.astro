@@ -18,11 +18,11 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
   crumbs={[{ label: 'Cennik' }]}
 >
   <section class="wrap page" data-pricing>
-   <div class="container">
     <header class="head">
       <h1 class="display">Cennik</h1>
       <p class="lead">Orientacyjne ceny, żebyś od razu wiedział, czego się spodziewać. Im więcej rolek, tym taniej wychodzi każda z nich.</p>
     </header>
+   <div class="container">
 
     <div class="plans">
       <article class="plan anchor" style="--d:0">
@@ -85,7 +85,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
         <p>{custom.text}</p>
       </div>
       <div class="actions">
-        <a class="btn solid mono" href={mail('Wycena indywidualna')}>Poproś o wycenę →</a>
+        <a class="btn solid mono" href={mail('Wycena indywidualna')} data-cart-open data-topic="Wycena indywidualna">Poproś o wycenę →</a>
         <a class="btn ghost mono" href={site.booking} target="_blank" rel="noopener noreferrer">Umów konsultację ↗<span class="sr"> (otwiera się w nowej karcie, Kalendarz Google)</span></a>
       </div>
     </section>

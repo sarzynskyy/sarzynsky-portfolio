@@ -16,7 +16,7 @@ const services = ['Teledyski', 'Reklamy i brand filmy', 'Eventy i koncerty', 'Po
       <p>Działam z {site.location}, ale chętnie jadę tam, gdzie jest ciekawe światło.</p>
       <h2 class="mono">Co robię</h2>
       <ul>{services.map(s => <li>{s}</li>)}</ul>
-      <a class="btn mono" href={`mailto:${site.email}`}>Napisz do mnie →</a>
+      <a class="btn mono" href={`mailto:${site.email}`} data-cart-open data-topic="Kontakt">Napisz do mnie →</a>
     </div>
   </section>
 </Base>
