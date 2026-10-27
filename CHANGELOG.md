@@ -20,6 +20,7 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-27
+- **Cennik, spójność i bezpieczeństwo prawne:** cała strona w jednej, wyśrodkowanej kolumnie (max 1200 px), nagłówki sekcji na środku; pojedyncza rolka 990 zł, Start 2 490 zł; zastrzeżenie, że ceny są orientacyjne i nie stanowią oferty (art. 66 § 1 k.c.), plus pytanie „Czy to ostateczne ceny?” w FAQ; plusy w dodatkach rysowane, więc idealnie na środku; uczciwy opis wersji poziomej (przekadrowanie, zaplanowane przed zdjęciami).
 - **Cennik, poprawka:** dodatkowa rolka 650 zł zamiast 450 zł (była tańsza niż rolka w pakiecie Pro, więc pakiety przestawały się opłacać); usunięty nieprawdziwy opis.
 - **Cennik, poprawki:** znaczek „Najczęściej wybierany” zamiast „Polecany”; mniejsze karty pakietów; dodatki jako wyraźne kafelki z opisem i ceną w kolorze akcentu (m.in. wyjaśnione, czym jest format poziomy 16:9); sekcje Dodatki, Wycena indywidualna i FAQ wyraźniej od siebie oddzielone (nagłówki, odstępy, czerwony akcent w bloku wyceny).
 - **Nowa strona /cennik:** pojedyncza rolka jako kotwica cenowa (1 200 zł), pakiety Start (3 rolki), Seria (6 rolek, polecany, wyróżniony na środku) i Pro (10 rolek) z ceną za rolkę, przekreśloną ceną pojedynczą i „taniej o X%”; lista, co wchodzi w pakiet; dodatki; wycena indywidualna; FAQ. Animacje: karty wjeżdżają po kolei, ceny odliczają się, punkty listy pojawiają się kolejno, polecany pakiet delikatnie pulsuje (wyłączone przy ograniczonym ruchu). Ceny to propozycja do zatwierdzenia, zmienia się je w src/data/pricing.js.

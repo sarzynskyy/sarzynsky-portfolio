@@ -11,7 +11,7 @@
 
 export const single = {
   name: 'Pojedyncza rolka',
-  price: 1200,
+  price: 990,
   per: 'za rolkę',
   features: [
     '1 rolka do 60 s (9:16)',
@@ -27,7 +27,7 @@ export const packages = [
     id: 'start',
     name: 'Start',
     reels: 3,
-    price: 2690,
+    price: 2490,
     tagline: 'Na sprawdzenie formatu',
     features: [
       '3 rolki do 60 s (9:16)',
@@ -79,7 +79,7 @@ export const addons = [
   // inaczej „Start + dokupione rolki” wychodzi taniej niż większy pakiet.
   { name: 'Dodatkowa rolka', note: 'dokładasz do dowolnego pakietu', price: '650 zł' },
   { name: 'Ujęcia z drona', note: 'widok z góry na obiekt, trasę albo wydarzenie', price: '400 zł' },
-  { name: 'Dodatkowy format poziomy 16:9', note: 'ta sama rolka w wersji na YouTube, stronę www lub ekran TV', price: '150 zł / rolka' },
+  { name: 'Wersja pozioma 16:9', note: 'ta sama rolka przekadrowana i zmontowana pod YouTube lub stronę www; zaplanowana przed zdjęciami, żeby kadr działał w obu formatach', price: '150 zł / rolka' },
   { name: 'Ekspres 72 h', note: 'gotowe rolki w 3 dni od zdjęć', price: '+30%' },
 ];
 
@@ -88,7 +88,15 @@ export const custom = {
   text: 'Dłuższe formy wyceniam indywidualnie, po krótkiej rozmowie o celu, terminie i budżecie.',
 };
 
+// Zastrzeżenie pod pakietami (ceny orientacyjne, nie oferta handlowa)
+export const disclaimer =
+  'Ceny są orientacyjne i nie stanowią oferty w rozumieniu art. 66 § 1 Kodeksu cywilnego. Ostateczny zakres i kwotę ustalamy indywidualnie przed rozpoczęciem pracy.';
+
 export const faq = [
+  {
+    q: 'Czy to ostateczne ceny?',
+    a: 'To ceny orientacyjne, żebyś wiedział, czego się spodziewać. Każdy projekt wyceniam indywidualnie po krótkiej rozmowie: zależy od miejsca zdjęć, liczby lokalizacji, osób na planie i terminu.',
+  },
   {
     q: 'Jak wygląda współpraca?',
     a: 'Krótka rozmowa o celu i grupie odbiorców, potem koncepcje i scenariusze do akceptacji, dzień zdjęciowy, montaż i poprawki. Dostajesz gotowe pliki do publikacji.',
