@@ -9,7 +9,7 @@ Każda zmiana na gałęzi `main` publikuje się automatycznie (GitHub Actions �
 |---|---|---|
 | 1 | Start: projekt sprawdzony, repo na GitHubie, strona robocza online | ✅ gotowe |
 | 2 | Wygląd: dopasowanie do Instagrama, układ z sekcjami projektów | 🔄 w trakcie |
-| 3 | Treści: projekty z Google Drive, showreel, O mnie, oferta | 🔄 w trakcie (5 projektów online) |
+| 3 | Treści: projekty z Google Drive, showreel, O mnie, oferta | 🔄 w trakcie (3 projekty online) |
 | 4 | Kontakt i CTA: formularz, przyciski, RODO | ⏳ |
 | 5 | SEO: meta, Open Graph, sitemap, robots.txt, schema.org | ⏳ |
 | 6 | Hosting, domena, SSL, nagłówki bezpieczeństwa | ⏳ |
@@ -18,6 +18,11 @@ Każda zmiana na gałęzi `main` publikuje się automatycznie (GitHub Actions �
 Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana po akceptacji właściciela.
 
 ## Zmiany
+
+### 2026-10-27
+- **AnyTaxi usunięte** ze strony (projekt i pliki rolek), na prośbę właściciela.
+- **Ironman w jednym projekcie:** „Ironman Tallinn” i „Droga do Ironmana” połączone w jedną podstronę: Tallinn jako główny film, pod nim 5 odcinków przygotowań.
+- **Strona główna:** wyróżnione projekty to teraz Ironman Tallinn, Runmageddon oraz Maratony, rower i góry.
 
 ### 2026-10-19
 - **Nowa organizacja treści:** projekt = jedna współpraca lub wydarzenie, z polami: dla kogo, kategoria, rok, rola, formaty. Kategorie: Sport, Motoryzacja, Reklama i social media, Eventy.
