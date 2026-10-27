@@ -146,7 +146,7 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
   .intro { margin: 12px 0 0; max-width: 560px; color: #c9c9c9; }
 
   /* ---------- Pasek liczb ---------- */
-  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 16px; margin: 28px 0 8px; padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 16px; margin: 24px 0 4px; padding: 16px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .stat { display: flex; flex-direction: column-reverse; gap: 4px; }
   .stat dd { font-size: clamp(34px, 5vw, 64px); line-height: .9; }
   .stat dt { color: var(--muted); }
@@ -214,7 +214,7 @@ const uid = `j-${Math.random().toString(36).slice(2, 8)}`;
     .kmsmall { display: block; }
   }
   @media (min-width: 900px) {
-    .panel { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+    .panel { display: grid; grid-template-columns: minmax(0, 640px) minmax(0, 1fr); gap: 48px; align-items: center; }
     .step-btn { flex: 0 1 auto; }
   }
 
