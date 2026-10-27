@@ -5,6 +5,7 @@
   --line: #222;
   --accent: #e8452c;
   --pad: clamp(16px, 4vw, 48px);
+  --header-h: 64px;
   --font-display: 'Anton', 'Impact', sans-serif;
   --font-body: 'Inter', system-ui, sans-serif;
 }
@@ -13,6 +14,9 @@ html { background: var(--bg); color: var(--fg); scroll-behavior: smooth; }
 body { font-family: var(--font-body); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 img, video, iframe { display: block; max-width: 100%; }
+@media (min-width: 760px) { :root { --header-h: 84px; } }
+/* kotwice (#prace itd.) nie chowają się pod stałym paskiem */
+html { scroll-padding-top: calc(var(--header-h) + 16px); }
 
 /* film grain */
 body::after {

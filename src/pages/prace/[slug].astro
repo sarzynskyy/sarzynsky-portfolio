@@ -21,7 +21,7 @@ const [mainVideo, ...rest] = p.youtube || [];
 const onRoad = new Set((p.journey?.stages || []).map((s) => s.video));
 const moreVideos = rest.filter((v) => !onRoad.has(v.id));
 ---
-<Base title={p.title} description={p.description}>
+<Base title={p.title} description={p.description} crumbs={[{ label: 'Prace', href: `${base}/prace` }, { label: p.title }]}>
   <article class="wrap">
     <header class="top">
       <p class="mono"><span class="dot"></span>{categoryLabel(p.category)} · {p.clients.join(', ')}{p.year && ` · ${p.year}`}</p>
@@ -130,7 +130,7 @@ const moreVideos = rest.filter((v) => !onRoad.has(v.id));
 </script>
 
 <style>
-  .top { padding-top: 160px; margin-bottom: 56px; max-width: 1100px; }
+  .top { padding-top: 16px; margin-bottom: 56px; max-width: 1100px; }
   h1 { font-size: clamp(56px, 11vw, 170px); margin: 16px 0 24px; }
   .desc { max-width: 620px; color: #c9c9c9; font-size: 18px; }
   .role { margin-top: 20px; color: var(--fg); }

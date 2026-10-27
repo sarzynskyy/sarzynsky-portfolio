@@ -20,6 +20,9 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-27
+- **Stały, większy pasek menu:** na każdej stronie u góry, zawsze na ciemnym rozmytym tle (84 px na komputerze, 64 px na telefonie); większe logo i menu (Prace, O mnie, Kontakt jako przycisk), podkreślenie aktywnej strony, pola kliknięcia min. 44 px. Usunięty efekt odwracania kolorów, bo na stałym tle nie miał już zastosowania.
+- **Ścieżka okruszków na podstronach:** Start / Prace / Nazwa projektu, Start / Prace, Start / O mnie; z danymi strukturalnymi BreadcrumbList dla Google.
+- **Kotwice** (np. „Zobacz prace”) nie chowają się pod stałym paskiem.
 - **Droga do Ironmana, nowy układ:** pasek liczb pod tytułem (1 TB materiału, 100+ h montażu, 6 etapów, 226 km) z odliczaniem; punkty trasy rosną z każdym etapem, grubsza linia z czerwonym postępem; panel etapu: film duży po lewej, po prawej nazwa, kafelki pływanie / rower / bieg i pasek „% pełnego dystansu”. Usunięty powielony duży napis etapu.
 - **Nagłówek:** po zjechaniu w dół dostaje ciemne, rozmyte tło, więc menu nie zlewa się z filmami (wcześniej nachodziło na napisy YouTube).
 - **Droga do Ironmana na komputerze też pozioma:** ta sama prosta trasa co na telefonie, tylko większa, z kilometrami pod każdym etapem; opis etapu obok filmu. Ukośna mapa usunięta.

@@ -4,7 +4,7 @@ import { site } from '../data/site.js';
 import { u } from '../lib/url.js';
 const services = ['Teledyski', 'Reklamy i brand filmy', 'Eventy i koncerty', 'Portrety', 'Content na social media', 'Montaż i color grading'];
 ---
-<Base title="About">
+<Base title="O mnie" crumbs={[{ label: 'O mnie' }]}>
   <section class="wrap about">
     <div class="photo reveal">
       <img src={u("/photos/placeholder/me.jpg")} alt={site.name} />
@@ -21,7 +21,7 @@ const services = ['Teledyski', 'Reklamy i brand filmy', 'Eventy i koncerty', 'Po
   </section>
 </Base>
 <style>
-  .about { padding-top: 140px; display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
+  .about { padding-top: 16px; display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
   .photo img { width: 100%; aspect-ratio: 3/4; object-fit: cover; }
   h1 { font-size: clamp(48px, 8vw, 120px); margin: 16px 0 28px; }
   .lead { font-size: clamp(18px, 2vw, 24px); margin-bottom: 16px; }
