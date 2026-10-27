@@ -74,6 +74,7 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
     const portrait = matchMedia('(orientation: portrait)').matches;
     v.src = (portrait ? v.dataset.src9 : v.dataset.src16)!;
     v.addEventListener('playing', () => v.classList.add('on'), { once: true });
+    v.play().catch(() => {});
     // gra tylko wtedy, gdy hero jest na ekranie (bateria, transfer)
     new IntersectionObserver(([e]) => { e.isIntersecting ? v.play().catch(() => {}) : v.pause(); }).observe(v);
   }
