@@ -61,7 +61,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
     </div>
 
     <p class="disclaimer">{disclaimer}</p>
-    <p class="howto">Wybierz pakiet i dodatki, a potem otwórz koszyk w prawym górnym rogu i wyślij zapytanie. Bez płatności i bez zobowiązań.</p>
+    <p class="howto">Wybierz pakiet i dodatki, a potem otwórz koszyk w prawym górnym rogu i wyślij zapytanie albo umów krótką konsultację online. Bez płatności i bez zobowiązań.</p>
 
     <section class="addons" aria-labelledby="dodatki">
       <p class="kicker mono">Opcjonalnie</p>
@@ -84,7 +84,10 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
         <h2 id="indywidualnie" class="display">{custom.title}</h2>
         <p>{custom.text}</p>
       </div>
-      <a class="btn solid mono" href={mail('Wycena indywidualna')}>Poproś o wycenę →</a>
+      <div class="actions">
+        <a class="btn solid mono" href={mail('Wycena indywidualna')}>Poproś o wycenę →</a>
+        <a class="btn ghost mono" href={site.booking} target="_blank" rel="noopener noreferrer">Umów konsultację ↗<span class="sr"> (otwiera się w nowej karcie, Kalendarz Google)</span></a>
+      </div>
     </section>
 
     <section class="faq" aria-labelledby="pytania">
@@ -209,6 +212,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
 
   .custom { padding: 32px 24px; display: grid; gap: 20px; align-items: center; background: linear-gradient(120deg, #2a110c, #121212 60%); border: 1px solid rgba(232,69,44,.45); border-left: 4px solid var(--accent); }
   @media (min-width: 900px) { .custom { grid-template-columns: 1fr auto; padding: 40px; } }
+  .custom .actions { display: grid; gap: 10px; }
   .custom h2 { font-size: clamp(30px, 4vw, 52px); }
   .custom p { margin-top: 8px; max-width: 620px; color: #c9c9c9; }
 

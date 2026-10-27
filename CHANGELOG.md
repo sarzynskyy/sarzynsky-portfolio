@@ -20,6 +20,7 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-10-27
+- **Konsultacje online:** przycisk „Umów konsultację” w koszyku i w bloku wyceny indywidualnej w cenniku. Prowadzi do strony rezerwacji w Kalendarzu Google (30 min, Google Meet, pon–pt 17:00–20:00), otwieranej w nowej karcie. Kalendarz nie jest osadzony na stronie, więc odwiedzający nie ładują skryptów ani ciasteczek Google, dopóki sami nie klikną.
 - **Koszyk zapytań (bez płatności):** ikona koszyka z licznikiem w pasku menu na każdej stronie. W cenniku przyciski „Wybieram…” i „Dodaj” wkładają pakiet (jeden naraz) i dodatki do koszyka; koszyk liczy kwotę szacunkową (dodatkowe rolki z ilością, wersja pozioma razy liczba rolek, ekspres +30% od sumy). W koszyku formularz: imię, e-mail, telefon, firma, forma kontaktu (e-mail, telefon, konsultacja online), termin, opis i zgoda na użycie danych. Na razie „Wyślij zapytanie” otwiera pocztę klienta z gotową wiadomością; po wyborze usługi zapytania będą trafiać prosto na Gmail. Koszyk pamięta tylko identyfikatory pozycji w przeglądarce, bez danych osobowych; dane z formularza nie są nigdzie zapisywane.
 - **Menu na telefonie:** logo, koszyk i przycisk menu; linki w rozwijanym panelu pod paskiem (duże pola, Esc zamyka). Wcześniej po dodaniu koszyka menu nie mieściło się na wąskim ekranie.
 - **Cennik:** tytuł i opis po lewej, jak na pozostałych podstronach; pakiety, dodatki i FAQ zostają na środku. Krótka instrukcja pod pakietami, jak działa koszyk.
