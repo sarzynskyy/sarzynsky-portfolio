@@ -45,7 +45,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
             {rolki(p.reels)} · {zl(p.perReel)} za rolkę
             <s class="was"><span class="sr">zamiast </span>{zl(single.price)}</s>
           </p>
-          <p class="save mono">Taniej o {p.save}% niż pojedynczo</p>
+          <p class="save mono">Oszczędzasz {p.save}% na rolce</p>
           <ul class="list">
             {p.features.map((f) => <li>{f}</li>)}
           </ul>
@@ -183,7 +183,7 @@ const mail = (subject) => `mailto:${site.email}?subject=${encodeURIComponent(sub
   .addons ul { list-style: none; display: grid; gap: 12px; }
   @media (min-width: 700px) { .addons ul { grid-template-columns: repeat(2, 1fr); } }
   @media (min-width: 1100px) { .addons ul { grid-template-columns: repeat(4, 1fr); } }
-  .addons li { display: grid; grid-template-columns: auto 1fr; grid-template-areas: 'plus txt' 'plus price'; gap: 6px 14px; padding: 20px; background: #121212; border: 1px solid var(--line); transition: border-color .25s, transform .25s; }
+  .addons li { display: grid; grid-template-columns: auto 1fr; grid-template-areas: 'plus txt' 'plus price'; grid-template-rows: 1fr auto; gap: 6px 14px; padding: 20px; background: #121212; border: 1px solid var(--line); transition: border-color .25s, transform .25s; }
   .addons li:hover { border-color: var(--accent); transform: translateY(-3px); }
   /* plus rysowany z dwóch kresek: zawsze idealnie na środku kółka (znak tekstowy „+” siedzi na linii pisma i ucieka w dół) */
   .plus { grid-area: plus; position: relative; width: 34px; height: 34px; border-radius: 50%; background: rgba(232,69,44,.15); }
