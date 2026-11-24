@@ -20,6 +20,7 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-11-24
+- **Logotypy jako ruchoma belka:** płynna pętla od prawej do lewej (38 s, na telefonie 28 s), z wygaszonymi krawędziami; zatrzymuje się po najechaniu myszką i przy nawigacji klawiaturą, a przy ograniczonym ruchu staje się zwykłym rzędem. Po najechaniu logo wraca do pełnych kolorów. Nowe: oficjalne logo Grupy Dobrzański (BMW, MINI) z materiałów prasowych oraz logo Apartamenty Królewska Huta; usunięty IRONMAN Polska.
 - **„Pracowałem z” jako logotypy:** Grupa Dobrzański, Dr Witt, Duda, Bergmen i AnyCar jako białe, wyciszone logotypy w równej siatce (2 kolumny na telefonie, 4 na komputerze), po najechaniu pełna jasność. Logotypy pobrane z oficjalnych stron marek (AnyCar z planszy końcowej własnej rolki), zamienione na wektory w jednym kolorze. IRONMAN Polska, Dudaily i Apartamenty Królewska Huta jako napisy, bo nie mają dostępnego logo. Dudaily prowadzi do projektu Ironman.
 
 ### 2026-10-27
