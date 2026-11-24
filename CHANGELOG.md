@@ -19,6 +19,9 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 
 ## Zmiany
 
+### 2026-11-24
+- **„Pracowałem z” jako logotypy:** Grupa Dobrzański, Dr Witt, Duda, Bergmen i AnyCar jako białe, wyciszone logotypy w równej siatce (2 kolumny na telefonie, 4 na komputerze), po najechaniu pełna jasność. Logotypy pobrane z oficjalnych stron marek (AnyCar z planszy końcowej własnej rolki), zamienione na wektory w jednym kolorze. IRONMAN Polska, Dudaily i Apartamenty Królewska Huta jako napisy, bo nie mają dostępnego logo. Dudaily prowadzi do projektu Ironman.
+
 ### 2026-10-27
 - **Strona główna, tło:** szybszy ruch: kadr 10 s, plamy światła 7 s i 9 s.
 - **Strona główna, tło:** ruch wyraźniejszy, ale nadal spokojny: przybliżenie i przesunięcie kadru w 16 s, dwie plamy światła (czerwona i fioletowa) płynące w przeciwnych kierunkach (11 s i 14 s).

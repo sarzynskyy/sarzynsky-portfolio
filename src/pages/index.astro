@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import { site } from '../data/site.js';
-import { projects, clients } from '../data/projects.js';
+import { projects } from '../data/projects.js';
+import { clientLogos } from '../data/clients.js';
 import { categoryLabel, formatsOf } from '../data/categories.js';
 import { u } from '../lib/url.js';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -47,8 +48,13 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
 
   <section class="wrap band" aria-labelledby="klienci">
     <h2 id="klienci" class="mono">Pracowałem z</h2>
-    <ul class="clients display">
-      {clients.map((c) => <li>{c}</li>)}
+    <ul class="logos">
+      {clientLogos.map((c) => {
+        const inner = c.logo
+          ? <img src={u(c.logo)} alt={c.name} loading="lazy" decoding="async" />
+          : <span class="word">{c.name}</span>;
+        return <li>{c.href ? <a class="cell" href={base + c.href}>{inner}</a> : <span class="cell">{inner}</span>}</li>;
+      })}
     </ul>
   </section>
 
@@ -104,7 +110,15 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
 
   .band { padding-top: 96px; }
   .band h2 { margin-bottom: 24px; }
-  .clients { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: clamp(32px, 5vw, 64px); }
+  /* logotypy: jeden kolor, równe pola, wyciszone; po najechaniu pełna jasność */
+  .logos { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+  @media (min-width: 760px) { .logos { grid-template-columns: repeat(4, 1fr); } }
+  .logos li { display: flex; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .logos .cell { flex: 1; display: flex; align-items: center; justify-content: center; min-height: clamp(96px, 11vw, 140px); padding: 20px; }
+  .logos img { width: auto; height: auto; max-width: min(100%, 150px); max-height: 40px; opacity: .6; transition: opacity .25s; }
+  .logos .word { font-size: 14px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; text-align: center; line-height: 1.35; color: var(--fg); opacity: .6; transition: opacity .25s; }
+  .logos li:hover img, .logos li:hover .word { opacity: 1; }
+  .logos a:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
   .services { list-style: none; border-top: 1px solid var(--line); max-width: 760px; }
   .services li { padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 18px; }
   .btn { display: inline-block; margin-top: 40px; padding: 18px 26px; background: var(--fg); color: var(--bg); transition: background .2s, color .2s; }
