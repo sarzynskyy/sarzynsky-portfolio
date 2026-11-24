@@ -9,6 +9,7 @@ export const clientLogos = [
   { name: 'Bergmen', logo: '/logos/bergmen.svg', h: 18 },
   { name: 'Apartamenty Królewska Huta', logo: '/logos/krolewska-huta.png', h: 56 },
   { name: 'AnyCar', logo: '/logos/anycar.svg', h: 20 },
-  // ig: twórca z Instagrama, pokazywany jako ikona Instagrama i @nazwa
-  { name: 'Dudaily', ig: 'dudaily', href: '/prace/ironman-tallinn' },
+  // ig: twórca z Instagrama: kółko ze zdjęciem profilowym i @nazwa, link do profilu
+  { name: 'Maciek Duda', ig: 'maciek_duda', avatar: '/logos/ig/maciek_duda.webp' },
+  { name: 'Paulina Danielak', ig: 'paulinadanielak.psycholog', avatar: '/logos/ig/paulinadanielak.psycholog.webp' },
 ];
