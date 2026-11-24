@@ -130,14 +130,19 @@ const services = ['Filmy na YouTube', 'Rolki i content na social media', 'Sport 
   .logos { list-style: none; display: flex; align-items: center; flex: none; }
   .logos li { flex: none; }
   .logos .cell { display: flex; align-items: center; justify-content: center; height: clamp(104px, 11vw, 136px); padding: 0 clamp(28px, 4vw, 56px); }
-  .logos img { width: auto; max-width: none; opacity: .6; filter: grayscale(1); transition: opacity .25s, filter .25s; }
+  .logos img { width: auto; max-width: none; opacity: .6; filter: grayscale(1); transition: opacity .3s, filter .3s, transform .3s cubic-bezier(.2,.7,.2,1); }
   .logos .word { font-size: 14px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; color: var(--fg); opacity: .6; transition: opacity .25s; }
-  .logos li:hover img { opacity: 1; filter: none; }
-  .logos li:hover .word { opacity: 1; }
+  /* po najechaniu: logo w kolorze, lekko większe i podświetlone poświatą; za nim miękka plama światła */
+  .logos .cell { position: relative; }
+  .logos .cell::before { content: ''; position: absolute; inset: 12% 8%; border-radius: 50%; background: radial-gradient(closest-side, rgba(255,255,255,.10), transparent); opacity: 0; transition: opacity .3s; pointer-events: none; }
+  .logos li:hover .cell::before, .logos .cell:focus-visible::before { opacity: 1; }
+  .logos li:hover img, .logos .cell:focus-visible img { opacity: 1; filter: drop-shadow(0 0 10px rgba(255,255,255,.45)) drop-shadow(0 0 22px rgba(255,255,255,.18)); transform: scale(1.08); }
+  .logos li:hover .word, .logos .cell:focus-visible .word { opacity: 1; }
+  .logos li:hover .avatar, .logos .cell:focus-visible .avatar { outline-color: var(--accent); }
   .logos .ig { display: inline-flex; align-items: center; gap: 12px; font-size: 16px; letter-spacing: .01em; text-transform: none; }
   .logos .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; outline: 1px solid rgba(255,255,255,.25); outline-offset: 2px; }
   .logos .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  @media (max-width: 759px) { .logos img { transform: scale(.8); } .track { animation-duration: 28s; } }
+  @media (max-width: 759px) { .logos img { transform: scale(.8); } .logos li:hover img { transform: scale(.86); } .track { animation-duration: 28s; } }
   @media (prefers-reduced-motion: reduce) {
     .marquee { -webkit-mask-image: none; mask-image: none; }
     .track { animation: none; width: auto; }

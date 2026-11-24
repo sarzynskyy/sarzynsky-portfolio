@@ -20,6 +20,7 @@ Stałe zasady: bezpieczeństwo, UX/UI (WCAG 2.2 AA, mobile-first), każda zmiana
 ## Zmiany
 
 ### 2026-11-24
+- **Belka, podświetlenie:** po najechaniu logo wraca do koloru, lekko się powiększa i dostaje białą poświatę, a za nim pojawia się miękka plama światła; przy kółkach z Instagrama obwódka zmienia się na czerwoną. To samo przy nawigacji klawiaturą.
 - **Twórcy z Instagrama w belce:** @maciek_duda i @paulinadanielak.psycholog jako kółko ze zdjęciem profilowym i nazwą konta, z linkiem do profilu (nowa karta). Zdjęcia zapisane lokalnie jako małe WebP (96 px), więc strona nie łączy się z Instagramem. Usunięte „Dudaily”.
 - **Belka logotypów:** nagłówek „Zaufali mi” zamiast „Pracowałem z”; twórcy z Instagrama oznaczeni ikoną Instagrama i nazwą konta (@dudaily) zamiast samego napisu.
 - **Logotypy jako ruchoma belka:** płynna pętla od prawej do lewej (38 s, na telefonie 28 s), z wygaszonymi krawędziami; zatrzymuje się po najechaniu myszką i przy nawigacji klawiaturą, a przy ograniczonym ruchu staje się zwykłym rzędem. Po najechaniu logo wraca do pełnych kolorów. Nowe: oficjalne logo Grupy Dobrzański (BMW, MINI) z materiałów prasowych oraz logo Apartamenty Królewska Huta; usunięty IRONMAN Polska.
