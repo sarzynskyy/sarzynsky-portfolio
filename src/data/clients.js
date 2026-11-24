@@ -3,7 +3,7 @@
 // Bez logo: nazwa jako napis (twórcy z Instagrama: ikona i @nazwa). href: opcjonalnie link do projektu na tej stronie.
 // h: wysokość logo w px (optyczne wyrównanie: szerokie logo niżej, wysokie wyżej)
 export const clientLogos = [
-  { name: 'BMW i MINI Grupa Dobrzański', logo: '/logos/dobrzanski.svg', h: 38 },
+  { name: 'BMW i MINI Grupa Dobrzański', logo: '/logos/grupa-dobrzanski-bmw-mini.svg', h: 38 },
   { name: 'Dr Witt', logo: '/logos/drwitt.svg', h: 38 },
   { name: 'Duda', logo: '/logos/duda.svg', h: 40 },
   { name: 'Bergmen', logo: '/logos/bergmen.svg', h: 18 },
